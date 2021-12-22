@@ -1,0 +1,35 @@
+{
+  "name": "FeatureCreepBot",
+  "version": "2.0.0",
+  "description": "FeatureCreepBot but this time with actual tested features before new features are added :O)",
+  "main": "build/client.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node build/client.js",
+    "dev": "ts-node src/client.ts"
+  },
+  "keywords": [
+    "discordx",
+    "discord.ts",
+    "discord.js",
+    "bot",
+    "discord",
+    "typescript"
+  ],
+  "bugs": {
+    "url": "https://github.com/oceanroleplay/discord-music-bot/issues"
+  },
+  "devDependencies": {
+    "prettier": "^2.5.1",
+    "typescript": "^4.5.2"
+  },
+  "dependencies": {
+    "@discordjs/voice": "^0.7.5",
+    "@discordx/importer": "^1.1.2",
+    "@discordx/music": "^3.0.16",
+    "@discordx/utilities": "^3.1.5",
+    "discord.js": "^13.3.1",
+    "discordx": "^9.0.1",
+    "reflect-metadata": "^0.1.13"
+  }
+}
