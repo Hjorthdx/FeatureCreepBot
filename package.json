@@ -6,7 +6,13 @@
   "scripts": {
     "build": "tsc",
     "start": "node build/client.js",
-    "dev": "ts-node src/client.ts"
+    "dev": "ts-node src/client.ts",
+    "test": "jest"
+  },
+  "jest": {
+    "testMatch": [
+      "**/?(*.)+(spec|test).[j]s?(x)"
+    ]
   },
   "keywords": [
     "discordx",
@@ -16,10 +22,9 @@
     "discord",
     "typescript"
   ],
-  "bugs": {
-    "url": "https://github.com/oceanroleplay/discord-music-bot/issues"
-  },
   "devDependencies": {
+    "@types/jest": "^27.0.3",
+    "jest": "^27.4.5",
     "prettier": "^2.5.1",
     "typescript": "^4.5.2"
   },
@@ -29,7 +34,6 @@
     "@discordx/music": "^3.0.16",
     "@discordx/utilities": "^3.1.5",
     "discord.js": "^13.3.1",
-    "discordx": "^9.0.1",
-    "reflect-metadata": "^0.1.13"
+    "discordx": "^9.0.1"
   }
 }

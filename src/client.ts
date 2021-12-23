@@ -25,10 +25,9 @@ client.once('ready', async () => {
 });
 
 client.on('interactionCreate', (interaction: Interaction) => {
-  console.log('I was called');
   client.executeInteraction(interaction);
 });
 
 importx(path.join(__dirname, 'commands', '**/*.{ts,js}')).then(() => {
-  client.login(''); // Remember to reinsert it here when this doesn't work =)
+  client.login('OTIzMjY2NjcwNjcwMjc0NjEx.YcNhFw.5co2Px3bRGP2xLVrDGQktRin4l8'); // Remember to reinsert it here when this doesn't work =)
 });
