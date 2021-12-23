@@ -2,10 +2,8 @@ import PomodoroManager, { PomodoroError } from '../application/pomodoroManager';
 import PomodoroTimer from '../application/pomodoroTimer';
 import Timer, { delay } from '../application/timer';
 
-
 describe('Pomodoro tests', () => {
 	const pomodoroManager = new PomodoroManager();
-
     
 	// Json stringify? Is that a bad thing to do? Idk how else to verify they are equal. toStrictEqual, toMatchObject doesn't pass.
 	it('PomodoroManager startNewPomodoro creates correct timer when both work and break duration is specified and is positive', () => {
@@ -97,8 +95,6 @@ describe('Pomodoro tests', () => {
         const expected = [newPomodoroTimer];
         pomodoroManager.listOfPomodoroTimers = [];
         pomodoroManager.startNewPomodoro(1, 1);
-        console.log(expected);
-        console.log(pomodoroManager.listOfPomodoroTimers);
         expect(JSON.stringify(expected[0])).toEqual(JSON.stringify(pomodoroManager.listOfPomodoroTimers[0]));
     });
 
@@ -134,11 +130,16 @@ describe('Pomodoro tests', () => {
         expect(expected).toEqual(actual);
     });
 
-    it('PomodoroTimer getEndWorkTime returns correct remaining time', () => {
+    // Doesn't work because date is first set when .start is called.
+    // Breaks other test if you set it in constructor too. Makes sense though.
+    it('PomodoroTimer getEndWorkTime returns correct remaining time', async () => {
+        console.log('expected here :O)');
         const expected = new Date(new Date().getDate() + 1);
         console.log(expected);
         const pomodoroTimer = new PomodoroTimer(1,1);
+        await pomodoroTimer.workTimer.start();
         const actual = pomodoroTimer.getEndWorkTime();
+        console.log('actual here :O)')
         console.log(actual);
         expect(expected).toEqual(actual);
     });
