@@ -1,18 +1,32 @@
 import Timer from "./timer";
 
 export default class PomodoroTimer {
-    workTimer: Timer;
-    breakTimer: Timer;
-
-    constructor(workDuration: number, breakDuration: number) {
-        this.workTimer = new Timer(workDuration);
-        this.breakTimer = new Timer(breakDuration);
+    private _workTimer: Timer;
+    public get workTimer(): Timer {
+        return this._workTimer;
     }
 
-    getEndWorkTime = () => this.workTimer.getRemainingTime();
+    private _breakTimer: Timer;
+    public get breakTimer(): Timer {
+        return this._breakTimer;
+    }
 
-    getEndBreakTime = () => this.breakTimer.getRemainingTime();
+    constructor(workDuration: number, breakDuration: number) {
+        this._workTimer = new Timer(workDuration);
+        this._breakTimer = new Timer(breakDuration);
+    }
 
-    isWorkTimer = () => this.workTimer.isOver;
+    getEndWorkTime = () => this._workTimer.getRemainingTime();
+
+    getEndBreakTime = () => this._breakTimer.getRemainingTime();
+
+    isWorkTimerOver = () => this._workTimer.isOver;
+
+    isBreakTimerOver = () => this._breakTimer.isOver;
+
+    // start methods ? Necessary?
+    startWorkTimer = () => this._workTimer.start();
+
+    startBreakTimer = () => this._breakTimer.start();
 
 }
