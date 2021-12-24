@@ -1,6 +1,6 @@
 import PomodoroManager, { PomodoroError } from '../application/pomodoroManager';
 import PomodoroTimer from '../application/pomodoroTimer';
-import Timer, { delay } from '../application/timer';
+import Timer from '../application/timer';
 
 describe('Pomodoro tests', () => {
 	const pomodoroManager = new PomodoroManager();

@@ -24,8 +24,10 @@ export class Pomodoro {
 		await newPomodoro.startWorkTimer();
 		let firstRun = true;
 		const x = setInterval(async () => {
-			// If there is a break
-			if (newPomodoro.isWorkTimerOver()) {
+			if (newPomodoro.isBreakTimerOver()) {
+				await interaction.editReply(`Break is now over =)`);
+				clearInterval(x);
+			} else if (newPomodoro.isWorkTimerOver()) {
 				// Needs a first run bool else I have to start a timer every time? That's so ugly...
 				if (firstRun) {
 					newPomodoro.startBreakTimer();
@@ -34,9 +36,6 @@ export class Pomodoro {
 				await interaction.editReply(
 					`Time left of current break timer: ${this.getFormattedDateString(newPomodoro.breakTimer)}`
 				);
-			} else if (newPomodoro.isBreakTimerOver()) {
-				await interaction.editReply(`Break is now over =)`);
-				clearInterval(x);
 			} else {
 				await interaction.editReply(
 					`Time left of current work timer: ${this.getFormattedDateString(newPomodoro.workTimer)}`
@@ -44,8 +43,6 @@ export class Pomodoro {
 			}
 		}, 1000);
 	}
-
-	getPomodoroMessage = () => `Pomodoro currently running!\n`;
 
 	getFormattedDateString = (timer: Timer) => timer.getRemainingTime().toISOString().substring(11, 19);
 
