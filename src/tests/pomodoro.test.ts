@@ -130,6 +130,22 @@ describe('Pomodoro tests', () => {
         expect(expected).toEqual(actual);
     });
 
+    // But how do I test this cause it doesn't return anything?
+    // I can test the methods inside I suppose. shouldAReminder be sent etc..
+    //What test cases can we think of?
+    // oldVoiceState is null
+    // oldVoiceState is not null
+    // newVoiceState is null
+    // newVoiceState is not null
+    // member size < groupsize
+    // member size > groupsize
+    // last message is too recent
+    // no last message
+    // last message is not too recent
+    it('Pomodoro onVoiceStateUpdate ...', () => {
+        
+    });
+
     /*
     // Doesn't work because date is first set when .start is called.
     // Breaks other test if you set it in constructor too. Makes sense though.
