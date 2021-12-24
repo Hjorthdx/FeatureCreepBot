@@ -1,5 +1,6 @@
 import { Discord, Slash, SlashGroup, SlashOption, On, ArgsOf } from 'discordx';
 import { Client, CommandInteraction, TextChannel, VoiceState } from 'discord.js';
+import axios from 'axios';
 import PomodoroManager, { PomodoroError } from '../application/pomodoroManager';
 import PomodoroTimer from '../application/pomodoroTimer';
 import Timer from '../application/timer';
@@ -8,27 +9,62 @@ import Timer from '../application/timer';
 @SlashGroup('pomodoro')
 export class Pomodoro {
 	pomodoroManager = new PomodoroManager();
+	groupSize = 1; // Update when done.
+	lastMessageSent: Date | undefined;
 
 	@On('voiceStateUpdate')
 	async onVoiceStateUpdate([oldVoiceState, newVoiceState]: ArgsOf<'voiceStateUpdate'>, client: Client) {
-		// Not done yet.
-		if (oldVoiceState.channel === undefined && newVoiceState.channel !== undefined) {
+		if (!this.isTimeForPomodoro(oldVoiceState, newVoiceState)) {
+			console.log('It is not time for a pomodoro');
 			return;
 		}
-		// Just testing stuff here to see how to find things.
-		// Seems to be able to send a message like this.
-		// Insert again when .env works =)
-		const myGuild = client.guilds.cache.find(guild => guild.id === '');
-		if (myGuild === undefined) {
+
+		const currentGuild = client.guilds.cache.find((guild) => guild.id === newVoiceState.guild.id);
+		if (currentGuild === undefined) {
 			return;
 		}
-		const myChannel = myGuild.channels.cache.find(channel => channel.id === '') as TextChannel;
-		if (myChannel === undefined) {
-			return;
-		}
-		myChannel.send('Test');
-		
+		const firstTextChannel = currentGuild.channels.cache.find((channel) => channel.type === 'GUILD_TEXT') as TextChannel;
+		console.log(this.shouldAReminderBeSent());
 	}
+
+	// Remember to add this again
+	// !await this.isScheduleBooked()
+	isTimeForPomodoro = (oldVoiceState: VoiceState, newVoiceState: VoiceState) => {
+		return (
+			!oldVoiceState.channel &&
+			newVoiceState.channel &&
+			newVoiceState.channel!.members.size >= this.groupSize
+		);
+	};
+
+	shouldAReminderBeSent = () => {
+		if (this.lastMessageSent) {
+			const futureTime = new Date();
+			futureTime.setMinutes(this.lastMessageSent.getMinutes() + 1);
+			if (new Date(Date.now()) >= futureTime) {
+				this.lastMessageSent = new Date(Date.now());
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			this.lastMessageSent = new Date(Date.now());
+			return true;
+		}
+	}
+
+	/*
+	// Make env file work and insert link here.
+	isScheduleBooked = async () => {
+		const response = await axios.get('');
+		if (response.status === 200) {
+			console.log(response.data)
+			return response.data;
+		} else {
+			console.log('The api did not return status code 200');
+			return false;
+		}
+	};*/
 
 	@Slash('start', { description: 'Start a new pomodoro' })
 	async start(
