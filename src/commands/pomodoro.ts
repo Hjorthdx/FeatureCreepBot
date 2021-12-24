@@ -19,22 +19,23 @@ export class Pomodoro {
 			return;
 		}
 
-		const currentGuild = client.guilds.cache.find((guild) => guild.id === newVoiceState.guild.id);
-		if (currentGuild === undefined) {
-			return;
+		if (this.shouldAReminderBeSent()) {
+			const currentGuild = client.guilds.cache.find((guild) => guild.id === newVoiceState.guild.id);
+			if (currentGuild === undefined) {
+				return;
+			}
+			const firstTextChannel = currentGuild.channels.cache.find((channel) => channel.type === 'GUILD_TEXT') as TextChannel;
+
+			firstTextChannel.send(
+				'Possible pomodoro opportunity!\nUse /pomodoro start "work length" "break length" to start a pomodoro!'
+			);
 		}
-		const firstTextChannel = currentGuild.channels.cache.find((channel) => channel.type === 'GUILD_TEXT') as TextChannel;
-		console.log(this.shouldAReminderBeSent());
 	}
 
 	// Remember to add this again
 	// !await this.isScheduleBooked()
 	isTimeForPomodoro = (oldVoiceState: VoiceState, newVoiceState: VoiceState) => {
-		return (
-			!oldVoiceState.channel &&
-			newVoiceState.channel &&
-			newVoiceState.channel!.members.size >= this.groupSize
-		);
+		return !oldVoiceState.channel && newVoiceState.channel && newVoiceState.channel!.members.size >= this.groupSize;
 	};
 
 	shouldAReminderBeSent = () => {
@@ -51,7 +52,7 @@ export class Pomodoro {
 			this.lastMessageSent = new Date(Date.now());
 			return true;
 		}
-	}
+	};
 
 	/*
 	// Make env file work and insert link here.
