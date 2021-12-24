@@ -1,5 +1,5 @@
-import { Discord, Slash, SlashGroup, SlashOption } from 'discordx';
-import { CommandInteraction } from 'discord.js';
+import { Discord, Slash, SlashGroup, SlashOption, On, ArgsOf } from 'discordx';
+import { Client, CommandInteraction, TextChannel, VoiceState } from 'discord.js';
 import PomodoroManager, { PomodoroError } from '../application/pomodoroManager';
 import PomodoroTimer from '../application/pomodoroTimer';
 import Timer from '../application/timer';
@@ -8,6 +8,27 @@ import Timer from '../application/timer';
 @SlashGroup('pomodoro')
 export class Pomodoro {
 	pomodoroManager = new PomodoroManager();
+
+	@On('voiceStateUpdate')
+	async onVoiceStateUpdate([oldVoiceState, newVoiceState]: ArgsOf<'voiceStateUpdate'>, client: Client) {
+		// Not done yet.
+		if (oldVoiceState.channel === undefined && newVoiceState.channel !== undefined) {
+			return;
+		}
+		// Just testing stuff here to see how to find things.
+		// Seems to be able to send a message like this.
+		// Insert again when .env works =)
+		const myGuild = client.guilds.cache.find(guild => guild.id === '');
+		if (myGuild === undefined) {
+			return;
+		}
+		const myChannel = myGuild.channels.cache.find(channel => channel.id === '') as TextChannel;
+		if (myChannel === undefined) {
+			return;
+		}
+		myChannel.send('Test');
+		
+	}
 
 	@Slash('start', { description: 'Start a new pomodoro' })
 	async start(
