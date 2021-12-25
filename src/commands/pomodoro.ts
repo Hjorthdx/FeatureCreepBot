@@ -14,6 +14,7 @@ export class Pomodoro {
 
 	@On('voiceStateUpdate')
 	async onVoiceStateUpdate([oldVoiceState, newVoiceState]: ArgsOf<'voiceStateUpdate'>, client: Client) {
+		console.log(newVoiceState.channel?.members);
 		if (!this.isTimeForPomodoro(oldVoiceState, newVoiceState)) {
 			console.log('It is not time for a pomodoro');
 			return;
@@ -34,8 +35,10 @@ export class Pomodoro {
 
 	// Remember to add this again
 	// !await this.isScheduleBooked()
-	isTimeForPomodoro = (oldVoiceState: VoiceState, newVoiceState: VoiceState) => {
-		return !oldVoiceState.channel && newVoiceState.channel && newVoiceState.channel!.members.size >= this.groupSize;
+	// Checks if newVoiceState.channel is not null because else the function can return null instead of a boolean.
+	// I'm not sure if I can do anything about this, cause it did look cleaner when it just said newVoiceState.channel
+	isTimeForPomodoro = (oldVoiceState: VoiceState, newVoiceState: VoiceState): boolean => {
+		return !oldVoiceState.channel && newVoiceState.channel !== null && newVoiceState.channel?.members?.size >= this.groupSize;
 	};
 
 	shouldAReminderBeSent = () => {
