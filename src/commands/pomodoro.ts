@@ -1,5 +1,5 @@
 import { Discord, Slash, SlashGroup, SlashOption, On, ArgsOf } from 'discordx';
-import { Client, CommandInteraction, TextChannel, VoiceState } from 'discord.js';
+import { Client, CommandInteraction, TextChannel, VoiceState, VoiceChannel } from 'discord.js';
 import axios from 'axios';
 import PomodoroManager, { PomodoroError } from '../application/pomodoroManager';
 import PomodoroTimer from '../application/pomodoroTimer';
@@ -9,12 +9,11 @@ import Timer from '../application/timer';
 @SlashGroup('pomodoro')
 export class Pomodoro {
 	pomodoroManager = new PomodoroManager();
-	groupSize = 1; // Update when done.
+	groupSize = 3; // Update when done.
 	lastMessageSent: Date | undefined;
 
 	@On('voiceStateUpdate')
 	async onVoiceStateUpdate([oldVoiceState, newVoiceState]: ArgsOf<'voiceStateUpdate'>, client: Client) {
-		console.log(newVoiceState.channel?.members);
 		if (!this.isTimeForPomodoro(oldVoiceState, newVoiceState)) {
 			console.log('It is not time for a pomodoro');
 			return;
@@ -38,7 +37,9 @@ export class Pomodoro {
 	// Checks if newVoiceState.channel is not null because else the function can return null instead of a boolean.
 	// I'm not sure if I can do anything about this, cause it did look cleaner when it just said newVoiceState.channel
 	isTimeForPomodoro = (oldVoiceState: VoiceState, newVoiceState: VoiceState): boolean => {
-		return !oldVoiceState.channel && newVoiceState.channel !== null && newVoiceState.channel?.members?.size >= this.groupSize;
+		return (
+			!oldVoiceState.channel && newVoiceState.channel !== null && newVoiceState.channel?.members?.size >= this.groupSize
+		);
 	};
 
 	shouldAReminderBeSent = () => {
@@ -76,6 +77,9 @@ export class Pomodoro {
 		@SlashOption('breaklength', { description: 'Break duration in minutes', required: true }) breakDuration: number,
 		interaction: CommandInteraction
 	) {
+		// A pomodoro timer should have a list of users that it's connected to and then they should get tagged everytime the timer changes state i.e. from work to break or done.
+		// getRoomUserIsIn has been made and works as intended I think. It still needs to be tested ofc, but base is made. Inserts the code next time and then text is properly =)
+		this.getRoomUserIsIn(interaction.client, interaction.guildId, interaction.member.user.id);
 		const newPomodoro: PomodoroTimer | PomodoroError = this.pomodoroManager.startNewPomodoro(workDuration, breakDuration);
 		if ('error' in newPomodoro) {
 			await interaction.reply(`Error occured! ${newPomodoro.error}`);
@@ -106,6 +110,15 @@ export class Pomodoro {
 	}
 
 	getFormattedDateString = (timer: Timer) => timer.getRemainingTime().toISOString().substring(11, 19);
+
+	getRoomUserIsIn = (client: Client, guildID: string, userID: string) => {
+		const currentGuild = client.guilds.cache.find((guild) => guild.id === guildID);
+		if (currentGuild === undefined) {
+			return;
+		}
+		const userConnectedRoom = currentGuild.channels.cache.find((channel) => channel.type === 'GUILD_VOICE' && channel.members.has(userID)) as VoiceChannel;
+		console.log(userConnectedRoom);
+	};
 
 	@Slash('break', { description: 'Starts a break. Useful when only a single timer is needed' })
 	async break(
