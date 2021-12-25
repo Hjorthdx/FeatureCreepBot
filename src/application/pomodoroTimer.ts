@@ -1,6 +1,8 @@
 import Timer from './timer';
+import { Collection, GuildMember } from 'discord.js';
 
 export default class PomodoroTimer {
+	users: Collection<string, GuildMember>;
 	private _workTimer: Timer;
 	public get workTimer(): Timer {
 		return this._workTimer;
@@ -11,9 +13,10 @@ export default class PomodoroTimer {
 		return this._breakTimer;
 	}
 
-	constructor(workDuration: number, breakDuration: number) {
+	constructor(workDuration: number, breakDuration: number, users: Collection<string, GuildMember>) {
 		this._workTimer = new Timer(workDuration);
 		this._breakTimer = new Timer(breakDuration);
+		this.users = users;
 	}
 
 	getEndWorkTime = () => this._workTimer.getRemainingTime();

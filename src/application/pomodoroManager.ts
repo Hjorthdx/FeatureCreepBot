@@ -1,5 +1,6 @@
 import PomodoroTimer from './pomodoroTimer';
 import Timer from "./timer";
+import { Collection, GuildMember } from 'discord.js';
 
 export interface PomodoroError {
     status: string;
@@ -13,7 +14,7 @@ export default class PomodoroManager {
         this.listOfPomodoroTimers = [];
     }
 
-    startNewPomodoro = (workDuration: number | undefined, breakDuration: number | undefined): PomodoroTimer | PomodoroError => {
+    startNewPomodoro = (workDuration: number | undefined, breakDuration: number | undefined, users: Collection<string, GuildMember>) => {
         const workResult = this.checkIfValidInput(workDuration);
         const breakResult = this.checkIfValidInput(breakDuration);
         if (workResult.status !== 'OK' && breakResult.status !== 'OK') {
@@ -26,7 +27,7 @@ export default class PomodoroManager {
             return breakResult;
         }
         
-        const newPomodoro = new PomodoroTimer(workDuration!, breakDuration!);
+        const newPomodoro = new PomodoroTimer(workDuration!, breakDuration!, users);
         this.listOfPomodoroTimers.push(newPomodoro);
         return newPomodoro;
     }

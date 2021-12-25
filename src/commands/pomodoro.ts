@@ -77,33 +77,54 @@ export class Pomodoro {
 		@SlashOption('breaklength', { description: 'Break duration in minutes', required: true }) breakDuration: number,
 		interaction: CommandInteraction
 	) {
-		// A pomodoro timer should have a list of users that it's connected to and then they should get tagged everytime the timer changes state i.e. from work to break or done.
-		// getRoomUserIsIn has been made and works as intended I think. It still needs to be tested ofc, but base is made. Inserts the code next time and then text is properly =)
-		this.getRoomUserIsIn(interaction.client, interaction.guildId, interaction.member.user.id);
-		const newPomodoro: PomodoroTimer | PomodoroError = this.pomodoroManager.startNewPomodoro(workDuration, breakDuration);
+		const connectedUserRoom = this.getRoomUserIsIn(interaction.client, interaction.guildId, interaction.member.user.id);
+		if (!connectedUserRoom) {
+			await interaction.reply('Please connect to a voice channel before starting a pomdooro!');
+			return;
+		}
+
+		const newPomodoro: PomodoroTimer | PomodoroError = this.pomodoroManager.startNewPomodoro(
+			workDuration,
+			breakDuration,
+			connectedUserRoom.members
+		);
 		if ('error' in newPomodoro) {
 			await interaction.reply(`Error occured! ${newPomodoro.error}`);
 			return;
 		}
-		await interaction.reply(`Pomodoro started with work duration: ${workDuration} and break duration: ${breakDuration}!`);
+
+		let allUsersString = '';
+		newPomodoro.users.forEach((user) => {
+			allUsersString += user.toString();
+		});
+
+		await interaction.reply(
+			`Pomodoro started with work duration: ${workDuration} and break duration: ${breakDuration}!\nUsers connected to the pomodoro are: ${allUsersString}`
+		);
 		await newPomodoro.startWorkTimer();
 		let firstRun = true;
 		const x = setInterval(async () => {
 			if (newPomodoro.isBreakTimerOver()) {
-				await interaction.editReply(`Break is now over =)`);
+				await interaction.editReply(`The pomodoro is now complete.\nPlease consider starting a new timer if continued work`);
+				await interaction.followUp(
+					`${allUsersString}\nThe break is now over!`
+				);
 				clearInterval(x);
 			} else if (newPomodoro.isWorkTimerOver()) {
 				// Needs a first run bool else I have to start a timer every time? That's so ugly...
 				if (firstRun) {
 					newPomodoro.startBreakTimer();
+					interaction.followUp(
+						`${allUsersString}\nThe work is now over. Please enjoy your break!`
+					);
 					firstRun = false;
 				}
 				await interaction.editReply(
-					`Time left of current break timer: ${this.getFormattedDateString(newPomodoro.breakTimer)}`
+					`${allUsersString}\nTime left of current break timer: ${this.getFormattedDateString(newPomodoro.breakTimer)}`
 				);
 			} else {
 				await interaction.editReply(
-					`Time left of current work timer: ${this.getFormattedDateString(newPomodoro.workTimer)}`
+					`${allUsersString}\nTime left of current work timer: ${this.getFormattedDateString(newPomodoro.workTimer)}\n`
 				);
 			}
 		}, 1000);
@@ -116,13 +137,14 @@ export class Pomodoro {
 		if (currentGuild === undefined) {
 			return;
 		}
-		const userConnectedRoom = currentGuild.channels.cache.find((channel) => channel.type === 'GUILD_VOICE' && channel.members.has(userID)) as VoiceChannel;
-		console.log(userConnectedRoom);
+		return currentGuild.channels.cache.find(
+			(channel) => channel.type === 'GUILD_VOICE' && channel.members.has(userID)
+		) as VoiceChannel;
 	};
 
 	@Slash('break', { description: 'Starts a break. Useful when only a single timer is needed' })
 	async break(
-		@SlashOption('breaklength', { description: 'Break duration in minutes' }) breakDuration: number,
+		@SlashOption('breaklength', { description: 'Break duration in minutes', required: true }) breakDuration: number,
 		interaction: CommandInteraction
 	) {
 		const newBreak = this.pomodoroManager.startNewBreak(breakDuration);
@@ -130,10 +152,32 @@ export class Pomodoro {
 			await interaction.reply(`Error occured!\n${newBreak.error}`);
 			return;
 		}
+
+		const connectedUserRoom = this.getRoomUserIsIn(interaction.client, interaction.guildId, interaction.user.id);
+		if (!connectedUserRoom) {
+			await interaction.reply('Please connect to a voice channel before starting a pomdooro!');
+			return;
+		}
+
+		let allUsersString = '';
+		connectedUserRoom.members.forEach((user) => {
+			allUsersString += user.toString();
+		});
+
 		await interaction.reply('Break started!');
 		await newBreak.start();
+		const x = setInterval(async () => {
+			if (newBreak.isOver) {
+				await interaction.followUp(`${allUsersString}\nBreak ended!`);
+				clearInterval(x);
+			} else {
+				await interaction.editReply(
+					`${allUsersString}\nTime left of current break: ${this.getFormattedDateString(newBreak)}\n`
+				);
+			}
+		}, 1000);
 		// Play sound here when implemented =)
 
-		await interaction.followUp('Break ended!');
+		
 	}
 }
