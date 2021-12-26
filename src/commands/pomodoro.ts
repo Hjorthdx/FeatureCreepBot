@@ -93,42 +93,42 @@ export class Pomodoro {
 			return;
 		}
 
+		await interaction.reply(`Pomodoro started with work duration: ${workDuration} and break duration: ${breakDuration}!`);
+		await newPomodoro.startWorkTimer();
+		await this.handlePomodoroInterval(interaction, newPomodoro);
+	}
+
+	// How do you test this when it doesn't return anything?
+	// Somehow mock editReply?
+	handlePomodoroInterval = async (interaction: CommandInteraction, pomodoro: PomodoroTimer) => {
 		let allUsersString = '';
-		newPomodoro.users.forEach((user) => {
+		pomodoro.users.forEach((user) => {
 			allUsersString += user.toString();
 		});
 
-		await interaction.reply(
-			`Pomodoro started with work duration: ${workDuration} and break duration: ${breakDuration}!\nUsers connected to the pomodoro are: ${allUsersString}`
-		);
-		await newPomodoro.startWorkTimer();
 		let firstRun = true;
-		const x = setInterval(async () => {
-			if (newPomodoro.isBreakTimerOver()) {
+		const updatePomodoroMessage = setInterval(async () => {
+			if (pomodoro.isBreakTimerOver()) {
 				await interaction.editReply(`The pomodoro is now complete.\nPlease consider starting a new timer if continued work`);
-				await interaction.followUp(
-					`${allUsersString}\nThe break is now over!`
-				);
-				clearInterval(x);
-			} else if (newPomodoro.isWorkTimerOver()) {
+				await interaction.followUp(`${allUsersString}\nThe break is now over!`);
+				clearInterval(updatePomodoroMessage);
+			} else if (pomodoro.isWorkTimerOver()) {
 				// Needs a first run bool else I have to start a timer every time? That's so ugly...
 				if (firstRun) {
-					newPomodoro.startBreakTimer();
-					interaction.followUp(
-						`${allUsersString}\nThe work is now over. Please enjoy your break!`
-					);
+					pomodoro.startBreakTimer();
+					interaction.followUp(`${allUsersString}\nThe work is now over. Please enjoy your break!`);
 					firstRun = false;
 				}
 				await interaction.editReply(
-					`${allUsersString}\nTime left of current break timer: ${this.getFormattedDateString(newPomodoro.breakTimer)}`
+					`${allUsersString}\nTime left of current break timer: ${this.getFormattedDateString(pomodoro.breakTimer)}`
 				);
 			} else {
 				await interaction.editReply(
-					`${allUsersString}\nTime left of current work timer: ${this.getFormattedDateString(newPomodoro.workTimer)}\n`
+					`${allUsersString}\nTime left of current work timer: ${this.getFormattedDateString(pomodoro.workTimer)}\n`
 				);
 			}
 		}, 1000);
-	}
+	};
 
 	getFormattedDateString = (timer: Timer) => timer.getRemainingTime().toISOString().substring(11, 19);
 
@@ -177,7 +177,5 @@ export class Pomodoro {
 			}
 		}, 1000);
 		// Play sound here when implemented =)
-
-		
 	}
 }

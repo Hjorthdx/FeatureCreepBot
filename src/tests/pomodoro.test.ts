@@ -1,4 +1,5 @@
-import { Collection, GuildMember, Snowflake, VoiceChannel, VoiceState } from "discord.js";
+import { Collection, GuildMember, Snowflake, VoiceChannel, VoiceState, CommandInteraction } from 'discord.js';
+import PomodoroTimer from '../application/pomodoroTimer';
 import { Pomodoro } from "../commands/pomodoro";
 
 describe('Pomodoro', () => {
@@ -227,4 +228,35 @@ describe('Pomodoro', () => {
 		const actual = pomodoro.shouldAReminderBeSent();
 		expect(expected).toEqual(actual);
 	});
+	
+	/* handlePomodoroInterval */
+	it('Pomodoro handlePomodoroInterval returns correct string when work time with no users', () => {
+		jest.useFakeTimers();
+		const expected = `\nTime left of current work timer: 23:59:59\n`;
+		let actual = '';
+		const mockCommandInteraction = {
+			editReply: jest.fn((options: string) => {
+				actual = options;
+			}) as unknown,
+		} as CommandInteraction;
+		const mockTimer = new PomodoroTimer(1, 1, new Collection());
+		pomodoro.handlePomodoroInterval(mockCommandInteraction, mockTimer);
+		jest.advanceTimersByTime(1000);
+		expect(expected).toEqual(actual);
+	});
+
+	// Future cases to do:
+	/* 
+		work time with a user
+		work time with multiple users
+		break time first run no users
+		break time first run with a user
+		break time first run with multiple users
+		break time not first run no users
+		break time not first run with a user
+		break time not first run with multiple users
+		timer is completely done with no users
+		timer is completely done with a user
+		timer is copletely done with multiple users
+	*/
 });
