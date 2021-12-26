@@ -1,4 +1,4 @@
-import { Collection, GuildMember, Snowflake, VoiceChannel, VoiceState, CommandInteraction, User, UserMention, MemberMention } from 'discord.js';
+import { Collection, GuildMember, Snowflake, VoiceChannel, VoiceState, CommandInteraction, MemberMention } from 'discord.js';
 import PomodoroTimer from '../application/pomodoroTimer';
 import { Pomodoro } from '../commands/pomodoro';
 
@@ -222,8 +222,9 @@ describe('Pomodoro', () => {
 	});
 
 	/* handlePomodoroInterval */
-	it('Pomodoro handlePomodoroInterval work time with no users', () => {
-		const expected = '\nTime left of current work timer: 23:59:59\n';
+	/*
+	it('Pomodoro handlePomodoroInterval work time with no members', () => {
+		const expected = '\nTime left of current work timer: 23:59:59';
 		let actual = '';
 		const mockCommandInteraction = {
 			editReply: jest.fn((options: string) => {
@@ -236,10 +237,8 @@ describe('Pomodoro', () => {
 		expect(expected).toEqual(actual);
 	});
 
-	it('Pomodoro handlePomodoroInterval work time with a user', () => {
-		const expected = '<@!mockKey1>\nTime left of current work timer: 23:59:59\n';
-		// Or '<@mockKey1>\nTime left of current work timer: 23:59:59\n' I think.
-		// That is if it seen as a User instead of a Member. I need to play around with it for a bit to figure out the inner workings of that.
+	it('Pomodoro handlePomodoroInterval work time with a member', () => {
+		const expected = '<@!mockKey1>\nTime left of current work timer: 23:59:59';
 		let actual = '';
 		const mockCommandInteraction = {
 			editReply: jest.fn((options: string) => {
@@ -249,12 +248,6 @@ describe('Pomodoro', () => {
 		const mockSnowFlake = 'mockKey1';
 		const mockMembers = new Collection<Snowflake, GuildMember>();
 		const mockMember = {
-			user: {
-				id: 'mockUserId',
-				toString: () => {
-					return `<@${mockSnowFlake}>` as UserMention;
-				}
-			} as User,
 			toString: () => {
 				return `<@!${mockSnowFlake}>` as MemberMention;
 			}
@@ -267,18 +260,113 @@ describe('Pomodoro', () => {
 		expect(expected).toEqual(actual);
 	});
 
+	it('Pomodoro handlePomodoroInterval work time with multiple members', () => {
+		const expected = '<@!mockKey1><@!mockKey2>\nTime left of current work timer: 23:59:59';
+		let actual = '';
+		const mockCommandInteraction = {
+			editReply: jest.fn((options: string) => {
+				actual = options;
+			}) as unknown,
+		} as CommandInteraction;
+		const mockMembers = new Collection<Snowflake, GuildMember>();
+		const mockMember1 = {
+			toString: () => {
+				return `<@!mockKey1>` as MemberMention;
+			}
+		} as GuildMember;
+		mockMembers.set('mockKey1', mockMember1);
+		const mockMember2 = {
+			toString: () => {
+				return `<@!mockKey2>` as MemberMention;
+			}
+		} as GuildMember;
+		mockMembers.set('mockKey2', mockMember2);
+		const mockTimer = new PomodoroTimer(1, 1, mockMembers);
+		pomodoro.handlePomodoroInterval(mockCommandInteraction, mockTimer);
+		jest.advanceTimersByTime(1000);
+	
+		expect(expected).toEqual(actual);
+	});*/
+
+	// This does not work for some reason. I can't figure out why right now. I've spent too long on it for now so I think I just need a break from it.
+	// For some reason actual is always empty...
+	it('Pomodoro handlePomodoroInterval break time with no members and first run is true', () => {
+		const expected = '\nTime left of current break timer: 23:59:59';
+		let actual = '';
+		let x = '';
+		const mockCommandInteraction = {
+			editReply: jest.fn((options: string) => {
+				actual = options;
+			}) as unknown,
+			followUp: jest.fn((options: string) => {
+				x = options;
+			}) as unknown,
+		} as CommandInteraction;
+		
+		//let mockEndTime = new Date();
+		//mockEndTime.setMinutes(new Date(Date.now()).getMinutes() + 1);
+
+		const mockTimer = new PomodoroTimer(1, 1, new Collection());
+		//mockTimer.breakTimer.endTime = mockEndTime;
+		mockTimer.workTimer.isOver = true;
+
+		//mockTimer.startBreakTimer();
+		pomodoro.handlePomodoroInterval(mockCommandInteraction, mockTimer);
+		jest.advanceTimersByTime(1000);
+		expect(expected).toEqual(actual);
+	});
+
+	/*
+	it('Pomodoro handlePomodoroInterval break time with no members and first run is true sends followUp message', () => {
+
+	});
+
+	it('Pomodoro handlePomodoroInterval break time with no members and first run is not true', () =>{
+
+	});
+
+
+	it('Pomdoro handlePomdoroInterval break time with a member and first run is true', () => {
+
+	});
+
+	it('Pomodoro handlePomodoroInterval break time with a member and first run is true sends followUp message', () => {
+
+	});
+
+	it('Pomodoro handlePomodoroInterval break time with a member and first run is not true', () => {
+
+	});
+
+
+	it('Pomodoro handlePomodoroInterval break time with multiple members and first run is true', () => {
+
+	});
+
+	it('Pomodoro handlePomodoroInterval break time with multiple members and first run is true sends followUp message', () => {
+
+	});
+
+	it('Pomodoro handlePomdoroInterval break time with multiple members and first run is not true', () => {
+
+	});
+
+
+	it('Pomodoro handlePomodoroInterval timer is completely done with no members', () => {
+
+	});
+
+	it('Pomodoro handlePomodoroInterval timer is completely done with a member', () => {
+
+	});
+
+	it('Pomodoro handlePomodoroInterval timer is completely done with multiple members', () => {
+
+	});*/
+
 	// Future cases to do:
 	/* 
-		work time with a user
-		work time with multiple users
-		break time first run no users
-		break time first run with a user
-		break time first run with multiple users
-		break time not first run no users
-		break time not first run with a user
-		break time not first run with multiple users
-		timer is completely done with no users
-		timer is completely done with a user
-		timer is copletely done with multiple users
+		Something with sending the followUp message aswell.
+
 	*/
 });

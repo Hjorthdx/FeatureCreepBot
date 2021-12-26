@@ -98,12 +98,9 @@ export class Pomodoro {
 		await this.handlePomodoroInterval(interaction, newPomodoro);
 	}
 
-	// How do you test this when it doesn't return anything?
-	// Somehow mock editReply?
 	handlePomodoroInterval = async (interaction: CommandInteraction, pomodoro: PomodoroTimer) => {
 		let allUsersString = '';
 		pomodoro.users.forEach((user) => {
-			console.log(user.toString());
 			allUsersString += user.toString();
 		});
 
@@ -116,8 +113,8 @@ export class Pomodoro {
 			} else if (pomodoro.isWorkTimerOver()) {
 				// Needs a first run bool else I have to start a timer every time? That's so ugly...
 				if (firstRun) {
-					pomodoro.startBreakTimer();
-					interaction.followUp(`${allUsersString}\nThe work is now over. Please enjoy your break!`);
+					await pomodoro.startBreakTimer();
+					await interaction.followUp(`${allUsersString}\nThe work is now over. Please enjoy your break!`);
 					firstRun = false;
 				}
 				await interaction.editReply(
@@ -125,7 +122,7 @@ export class Pomodoro {
 				);
 			} else {
 				await interaction.editReply(
-					`${allUsersString}\nTime left of current work timer: ${this.getFormattedDateString(pomodoro.workTimer)}\n`
+					`${allUsersString}\nTime left of current work timer: ${this.getFormattedDateString(pomodoro.workTimer)}`
 				);
 			}
 		}, 1000);
