@@ -103,6 +103,7 @@ export class Pomodoro {
 	handlePomodoroInterval = async (interaction: CommandInteraction, pomodoro: PomodoroTimer) => {
 		let allUsersString = '';
 		pomodoro.users.forEach((user) => {
+			console.log(user.toString());
 			allUsersString += user.toString();
 		});
 
