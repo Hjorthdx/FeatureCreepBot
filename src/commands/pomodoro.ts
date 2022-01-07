@@ -176,7 +176,7 @@ export class Pomodoro {
 				clearInterval(updateBreakMessage);
 			} else {
 				await interaction.editReply(
-					`${allUsersString}\nTime left of current break: ${this.getFormattedDateString(breakTimer)}\n`
+					`${allUsersString}\nTime left of current break: ${this.getFormattedDateString(breakTimer)}`
 				);
 			}
 		}, 1000);
