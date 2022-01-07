@@ -107,7 +107,9 @@ export class Pomodoro {
 		let firstRun = true;
 		const updatePomodoroMessage = setInterval(async () => {
 			if (pomodoro.isBreakTimerOver()) {
-				await interaction.editReply(`The pomodoro is now complete.\nPlease consider starting a new timer if continued work`);
+				await interaction.editReply(
+					`${allUsersString}\nThe pomodoro is now complete.\nPlease consider starting a new timer if continued work`
+				);
 				await interaction.followUp(`${allUsersString}\nThe break is now over!`);
 				clearInterval(updatePomodoroMessage);
 			} else if (pomodoro.isWorkTimerOver()) {
@@ -157,23 +159,27 @@ export class Pomodoro {
 			return;
 		}
 
+		await interaction.reply('Break started!');
+		await newBreak.start();
+		await this.handleBreakInterval(interaction, newBreak, connectedUserRoom);
+	}
+
+	handleBreakInterval = async (interaction: CommandInteraction, breakTimer: Timer, connectedUserRoom: VoiceChannel) => {
 		let allUsersString = '';
 		connectedUserRoom.members.forEach((user) => {
 			allUsersString += user.toString();
 		});
 
-		await interaction.reply('Break started!');
-		await newBreak.start();
-		const x = setInterval(async () => {
-			if (newBreak.isOver) {
+		const updateBreakMessage = setInterval(async () => {
+			if (breakTimer.isOver) {
 				await interaction.followUp(`${allUsersString}\nBreak ended!`);
-				clearInterval(x);
+				clearInterval(updateBreakMessage);
 			} else {
 				await interaction.editReply(
-					`${allUsersString}\nTime left of current break: ${this.getFormattedDateString(newBreak)}\n`
+					`${allUsersString}\nTime left of current break: ${this.getFormattedDateString(breakTimer)}\n`
 				);
 			}
 		}, 1000);
 		// Play sound here when implemented =)
-	}
+	};
 }
