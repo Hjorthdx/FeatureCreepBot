@@ -1,4 +1,4 @@
-import { Collection, GuildMember, Snowflake, VoiceChannel, VoiceState, CommandInteraction } from 'discord.js';
+import { Collection, GuildMember, Snowflake, VoiceChannel, VoiceState, CommandInteraction, MemberMention } from 'discord.js';
 import flushPromises from 'flush-promises';
 import PomodoroTimer from '../application/pomodoroTimer';
 import { Pomodoro } from '../commands/pomodoro';
@@ -223,7 +223,6 @@ describe('Pomodoro', () => {
 	});
 
 	/* handlePomodoroInterval */
-	/*
 	it('Pomodoro handlePomodoroInterval work time with no members', () => {
 		const expected = '\nTime left of current work timer: 23:59:59';
 		let actual = '';
@@ -287,10 +286,9 @@ describe('Pomodoro', () => {
 		jest.advanceTimersByTime(1000);
 	
 		expect(expected).toEqual(actual);
-	});*/
+	});
 
-	// Also test the thing with followup! Thanks!
-	it('Pomodoro handlePomodoroInterval break time with no members and first run is true editReply is valid', async () => {
+	it('Pomodoro handlePomodoroInterval break time with no members and first run is true', async () => {
 		const expected = '\nTime left of current break timer: 23:59:59';
 		let actual = '';
 		const mockCommandInteraction = {
@@ -298,13 +296,10 @@ describe('Pomodoro', () => {
 				actual = options;
 			}) as unknown,
 			followUp: jest.fn((options: string) => {
-				let x = options;
-				console.log('followUp called');
-				console.log(options);
 			}) as unknown,
 		} as CommandInteraction;
 		const mockTimer = new PomodoroTimer(1, 1, new Collection());
-		mockTimer.startBreakTimer = jest.fn(async () => console.log('Started new break timer'));
+		mockTimer.startBreakTimer = jest.fn(async () => {});
 		mockTimer.workTimer.isOver = true;
 		pomodoro.handlePomodoroInterval(mockCommandInteraction, mockTimer);
 		jest.advanceTimersByTime(1000);
@@ -312,42 +307,221 @@ describe('Pomodoro', () => {
 		expect(actual).toEqual(expected);
 	});
 
-	/*
-	it('Pomodoro handlePomodoroInterval break time with no members and first run is true sends followUp message', () => {
-
+	it('Pomodoro handlePomodoroInterval break time with no members and first run is true sends followUp message', async () => {
+		const expected = '\nThe work is now over. Please enjoy your break!';
+		let actual = '';
+		const mockCommandInteraction = {
+			editReply: jest.fn((options: string) => {
+			}) as unknown,
+			followUp: jest.fn((options: string) => {
+				actual = options;
+			}) as unknown,
+		} as CommandInteraction;
+		const mockTimer = new PomodoroTimer(1, 1, new Collection());
+		mockTimer.startBreakTimer = jest.fn(async () => {});
+		mockTimer.workTimer.isOver = true;
+		pomodoro.handlePomodoroInterval(mockCommandInteraction, mockTimer);
+		jest.advanceTimersByTime(1000);
+		await flushPromises();
+		expect(actual).toEqual(expected);
 	});
 
-	it('Pomodoro handlePomodoroInterval break time with no members and first run is not true', () =>{
-
+	it('Pomodoro handlePomodoroInterval break time with no members and first run is not true', async () =>{
+		const expected = '\nTime left of current break timer: 23:59:58';
+		let actual = '';
+		const mockCommandInteraction = {
+			editReply: jest.fn((options: string) => {
+				actual = options;
+			}) as unknown,
+			followUp: jest.fn((options: string) => {
+			}) as unknown,
+		} as CommandInteraction;
+		const mockTimer = new PomodoroTimer(1, 1, new Collection());
+		mockTimer.startBreakTimer = jest.fn(async () => {});
+		mockTimer.workTimer.isOver = true;
+		pomodoro.handlePomodoroInterval(mockCommandInteraction, mockTimer);
+		jest.advanceTimersByTime(2000);
+		await flushPromises();
+		expect(actual).toEqual(expected);
 	});
 
-
-	it('Pomdoro handlePomdoroInterval break time with a member and first run is true', () => {
-
+	it('Pomdoro handlePomdoroInterval break time with a member and first run is true', async () => {
+		const expected = '<@!mockKey1>\nTime left of current break timer: 23:59:59';
+		let actual = '';
+		const mockCommandInteraction = {
+			editReply: jest.fn((options: string) => {
+				actual = options;
+			}) as unknown,
+			followUp: jest.fn((options: string) => {
+			}) as unknown,
+		} as CommandInteraction;
+		const mockSnowFlake = 'mockKey1';
+		const mockMembers = new Collection<Snowflake, GuildMember>();
+		const mockMember = {
+			toString: () => {
+				return `<@!${mockSnowFlake}>` as MemberMention;
+			}
+		} as GuildMember;
+		mockMembers.set(mockSnowFlake, mockMember);
+		const mockTimer = new PomodoroTimer(1, 1, mockMembers);
+		mockTimer.startBreakTimer = jest.fn(async () => {});
+		mockTimer.workTimer.isOver = true;
+		pomodoro.handlePomodoroInterval(mockCommandInteraction, mockTimer);
+		jest.advanceTimersByTime(1000);
+		await flushPromises();
+		expect(actual).toEqual(expected);
 	});
 
-	it('Pomodoro handlePomodoroInterval break time with a member and first run is true sends followUp message', () => {
-
+	it('Pomodoro handlePomodoroInterval break time with a member and first run is true sends followUp message', async () => {
+		const expected = '<@!mockKey1>\nThe work is now over. Please enjoy your break!';
+		let actual = '';
+		const mockCommandInteraction = {
+			editReply: jest.fn((options: string) => {
+			}) as unknown,
+			followUp: jest.fn((options: string) => {
+				actual = options;
+			}) as unknown,
+		} as CommandInteraction;
+		const mockSnowFlake = 'mockKey1';
+		const mockMembers = new Collection<Snowflake, GuildMember>();
+		const mockMember = {
+			toString: () => {
+				return `<@!${mockSnowFlake}>` as MemberMention;
+			}
+		} as GuildMember;
+		mockMembers.set(mockSnowFlake, mockMember);
+		const mockTimer = new PomodoroTimer(1, 1, mockMembers);
+		mockTimer.startBreakTimer = jest.fn(async () => {});
+		mockTimer.workTimer.isOver = true;
+		pomodoro.handlePomodoroInterval(mockCommandInteraction, mockTimer);
+		jest.advanceTimersByTime(1000);
+		await flushPromises();
+		expect(actual).toEqual(expected);
 	});
 
-	it('Pomodoro handlePomodoroInterval break time with a member and first run is not true', () => {
-
+	it('Pomodoro handlePomodoroInterval break time with a member and first run is not true', async () => {
+		const expected = '<@!mockKey1>\nTime left of current break timer: 23:59:58';
+		let actual = '';
+		const mockCommandInteraction = {
+			editReply: jest.fn((options: string) => {
+				actual = options;
+			}) as unknown,
+			followUp: jest.fn((options: string) => {
+			}) as unknown,
+		} as CommandInteraction;
+		const mockSnowFlake = 'mockKey1';
+		const mockMembers = new Collection<Snowflake, GuildMember>();
+		const mockMember = {
+			toString: () => {
+				return `<@!${mockSnowFlake}>` as MemberMention;
+			}
+		} as GuildMember;
+		mockMembers.set(mockSnowFlake, mockMember);
+		const mockTimer = new PomodoroTimer(1, 1, mockMembers);
+		mockTimer.startBreakTimer = jest.fn(async () => {});
+		mockTimer.workTimer.isOver = true;
+		pomodoro.handlePomodoroInterval(mockCommandInteraction, mockTimer);
+		jest.advanceTimersByTime(2000);
+		await flushPromises();
+		expect(actual).toEqual(expected);
 	});
 
-
-	it('Pomodoro handlePomodoroInterval break time with multiple members and first run is true', () => {
-
+	it('Pomodoro handlePomodoroInterval break time with multiple members and first run is true', async () => {
+		const expected = '<@!mockKey1><@!mockKey2>\nTime left of current break timer: 23:59:59';
+		let actual = '';
+		const mockCommandInteraction = {
+			editReply: jest.fn((options: string) => {
+				actual = options;
+			}) as unknown,
+			followUp: jest.fn((options: string) => {
+			}) as unknown,
+		} as CommandInteraction;
+		const mockMembers = new Collection<Snowflake, GuildMember>();
+		const mockMember1 = {
+			toString: () => {
+				return `<@!mockKey1>` as MemberMention;
+			}
+		} as GuildMember;
+		mockMembers.set('mockKey1', mockMember1);
+		const mockMember2 = {
+			toString: () => {
+				return `<@!mockKey2>` as MemberMention;
+			}
+		} as GuildMember;
+		mockMembers.set('mockKey2', mockMember2);
+		const mockTimer = new PomodoroTimer(1, 1, mockMembers);
+		mockTimer.startBreakTimer = jest.fn(async () => {});
+		mockTimer.workTimer.isOver = true;
+		pomodoro.handlePomodoroInterval(mockCommandInteraction, mockTimer);
+		jest.advanceTimersByTime(1000);
+		await flushPromises();
+		expect(actual).toEqual(expected);
 	});
 
-	it('Pomodoro handlePomodoroInterval break time with multiple members and first run is true sends followUp message', () => {
-
+	it('Pomodoro handlePomodoroInterval break time with multiple members and first run is true sends followUp message', async () => {
+		const expected = '<@!mockKey1><@!mockKey2>\nThe work is now over. Please enjoy your break!';
+		let actual = '';
+		const mockCommandInteraction = {
+			editReply: jest.fn((options: string) => {
+			}) as unknown,
+			followUp: jest.fn((options: string) => {
+				actual = options;
+			}) as unknown,
+		} as CommandInteraction;
+		const mockMembers = new Collection<Snowflake, GuildMember>();
+		const mockMember1 = {
+			toString: () => {
+				return `<@!mockKey1>` as MemberMention;
+			}
+		} as GuildMember;
+		mockMembers.set('mockKey1', mockMember1);
+		const mockMember2 = {
+			toString: () => {
+				return `<@!mockKey2>` as MemberMention;
+			}
+		} as GuildMember;
+		mockMembers.set('mockKey2', mockMember2);
+		const mockTimer = new PomodoroTimer(1, 1, mockMembers);
+		mockTimer.startBreakTimer = jest.fn(async () => {});
+		mockTimer.workTimer.isOver = true;
+		pomodoro.handlePomodoroInterval(mockCommandInteraction, mockTimer);
+		jest.advanceTimersByTime(1000);
+		await flushPromises();
+		expect(actual).toEqual(expected);
 	});
 
-	it('Pomodoro handlePomdoroInterval break time with multiple members and first run is not true', () => {
-
+	it('Pomodoro handlePomdoroInterval break time with multiple members and first run is not true', async () => {
+		const expected = '<@!mockKey1><@!mockKey2>\nTime left of current break timer: 23:59:58';
+		let actual = '';
+		const mockCommandInteraction = {
+			editReply: jest.fn((options: string) => {
+				actual = options;
+			}) as unknown,
+			followUp: jest.fn((options: string) => {
+			}) as unknown,
+		} as CommandInteraction;
+		const mockMembers = new Collection<Snowflake, GuildMember>();
+		const mockMember1 = {
+			toString: () => {
+				return `<@!mockKey1>` as MemberMention;
+			}
+		} as GuildMember;
+		mockMembers.set('mockKey1', mockMember1);
+		const mockMember2 = {
+			toString: () => {
+				return `<@!mockKey2>` as MemberMention;
+			}
+		} as GuildMember;
+		mockMembers.set('mockKey2', mockMember2);
+		const mockTimer = new PomodoroTimer(1, 1, mockMembers);
+		mockTimer.startBreakTimer = jest.fn(async () => {});
+		mockTimer.workTimer.isOver = true;
+		pomodoro.handlePomodoroInterval(mockCommandInteraction, mockTimer);
+		jest.advanceTimersByTime(2000);
+		await flushPromises();
+		expect(actual).toEqual(expected);
 	});
-
-
+/*
 	it('Pomodoro handlePomodoroInterval timer is completely done with no members', () => {
 
 	});
