@@ -1,4 +1,5 @@
-import { Collection, GuildMember, Snowflake, VoiceChannel, VoiceState, CommandInteraction, MemberMention } from 'discord.js';
+import { Collection, GuildMember, Snowflake, VoiceChannel, VoiceState, CommandInteraction } from 'discord.js';
+import flushPromises from 'flush-promises';
 import PomodoroTimer from '../application/pomodoroTimer';
 import { Pomodoro } from '../commands/pomodoro';
 
@@ -288,32 +289,27 @@ describe('Pomodoro', () => {
 		expect(expected).toEqual(actual);
 	});*/
 
-	// This does not work for some reason. I can't figure out why right now. I've spent too long on it for now so I think I just need a break from it.
-	// For some reason actual is always empty...
-	it('Pomodoro handlePomodoroInterval break time with no members and first run is true', () => {
+	// Also test the thing with followup! Thanks!
+	it('Pomodoro handlePomodoroInterval break time with no members and first run is true editReply is valid', async () => {
 		const expected = '\nTime left of current break timer: 23:59:59';
 		let actual = '';
-		let x = '';
 		const mockCommandInteraction = {
 			editReply: jest.fn((options: string) => {
 				actual = options;
 			}) as unknown,
 			followUp: jest.fn((options: string) => {
-				x = options;
+				let x = options;
+				console.log('followUp called');
+				console.log(options);
 			}) as unknown,
 		} as CommandInteraction;
-		
-		//let mockEndTime = new Date();
-		//mockEndTime.setMinutes(new Date(Date.now()).getMinutes() + 1);
-
 		const mockTimer = new PomodoroTimer(1, 1, new Collection());
-		//mockTimer.breakTimer.endTime = mockEndTime;
+		mockTimer.startBreakTimer = jest.fn(async () => console.log('Started new break timer'));
 		mockTimer.workTimer.isOver = true;
-
-		//mockTimer.startBreakTimer();
 		pomodoro.handlePomodoroInterval(mockCommandInteraction, mockTimer);
 		jest.advanceTimersByTime(1000);
-		expect(expected).toEqual(actual);
+		await flushPromises();
+		expect(actual).toEqual(expected);
 	});
 
 	/*
