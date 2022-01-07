@@ -24,7 +24,7 @@ describe('Pomodoro', () => {
 			channel: null,
 		} as VoiceState;
 		const actual = pomodoro.isTimeForPomodoro(oldVoiceState, newVoiceState);
-		expect(expected).toEqual(actual);
+		expect(actual).toEqual(expected);
 	});
 
 	it('Pomodoro isTimeForPomodoro oldVoiceState channel is null and newVoiceState channel is not null with no members', () => {
@@ -38,7 +38,7 @@ describe('Pomodoro', () => {
 			} as VoiceChannel,
 		} as VoiceState;
 		const actual = pomodoro.isTimeForPomodoro(oldVoiceState, newVoiceState);
-		expect(expected).toEqual(actual);
+		expect(actual).toEqual(expected);
 	});
 
 	it('Pomodoro isTimeForPomodoro oldVoiceState channel is null and newVoiceState channel is not null with a single member', () => {
@@ -54,7 +54,7 @@ describe('Pomodoro', () => {
 			} as VoiceChannel,
 		} as VoiceState;
 		const actual = pomodoro.isTimeForPomodoro(oldVoiceState, newVoiceState);
-		expect(expected).toEqual(actual);
+		expect(actual).toEqual(expected);
 	});
 
 	it('Pomodoro isTimeForPomodoro oldVoiceState channel is null and newVoiceState channel is not null with enough members', () => {
@@ -72,7 +72,7 @@ describe('Pomodoro', () => {
 			} as VoiceChannel,
 		} as VoiceState;
 		const actual = pomodoro.isTimeForPomodoro(oldVoiceState, newVoiceState);
-		expect(expected).toEqual(actual);
+		expect(actual).toEqual(expected);
 	});
 
 	it('Pomodoro isTimeForPomodoro oldVoiceState channel is not null with no members and newVoiceState channel is null', () => {
@@ -84,7 +84,7 @@ describe('Pomodoro', () => {
 			channel: null,
 		} as VoiceState;
 		const actual = pomodoro.isTimeForPomodoro(oldVoiceState, newVoiceState);
-		expect(expected).toEqual(actual);
+		expect(actual).toEqual(expected);
 	});
 
 	it('Pomodoro isTimeForPomodoro oldVoiceState channel is not null with a single member and newVoiceState channel is null', () => {
@@ -100,7 +100,7 @@ describe('Pomodoro', () => {
 			channel: null,
 		} as VoiceState;
 		const actual = pomodoro.isTimeForPomodoro(oldVoiceState, newVoiceState);
-		expect(expected).toEqual(actual);
+		expect(actual).toEqual(expected);
 	});
 
 	it('Pomodoro isTimeForPomodoro oldVoiceState channel is not null with enough members and newVoiceState channel is null', () => {
@@ -118,7 +118,7 @@ describe('Pomodoro', () => {
 			channel: null,
 		} as VoiceState;
 		const actual = pomodoro.isTimeForPomodoro(oldVoiceState, newVoiceState);
-		expect(expected).toEqual(actual);
+		expect(actual).toEqual(expected);
 	});
 
 	it('Pomodoro isTimeForPomodoro oldVoiceState channel is not null with no members and newVoiceState channel is not null with no members', () => {
@@ -130,7 +130,7 @@ describe('Pomodoro', () => {
 			channel: {} as VoiceChannel,
 		} as VoiceState;
 		const actual = pomodoro.isTimeForPomodoro(oldVoiceState, newVoiceState);
-		expect(expected).toEqual(actual);
+		expect(actual).toEqual(expected);
 	});
 
 	it('Pomodoro isTimeForPomodoro oldVoiceState channel is not null with a single member and newVoiceState channel is not null with no members', () => {
@@ -146,7 +146,7 @@ describe('Pomodoro', () => {
 			channel: {} as VoiceChannel,
 		} as VoiceState;
 		const actual = pomodoro.isTimeForPomodoro(oldVoiceState, newVoiceState);
-		expect(expected).toEqual(actual);
+		expect(actual).toEqual(expected);
 	});
 
 	it('Pomodoro isTimeForPomodoro oldVoiceState channel is not null with enough members and newVoiceState channel is not null with no members', () => {
@@ -164,7 +164,7 @@ describe('Pomodoro', () => {
 			channel: {} as VoiceChannel,
 		} as VoiceState;
 		const actual = pomodoro.isTimeForPomodoro(oldVoiceState, newVoiceState);
-		expect(expected).toEqual(actual);
+		expect(actual).toEqual(expected);
 	});
 
 	it('Pomodoro isTimeForPomodoro oldVoiceState channel is not null with no members and newVoiceState channel is not null with a single member', () => {
@@ -180,7 +180,7 @@ describe('Pomodoro', () => {
 			} as VoiceChannel,
 		} as VoiceState;
 		const actual = pomodoro.isTimeForPomodoro(oldVoiceState, newVoiceState);
-		expect(expected).toEqual(actual);
+		expect(actual).toEqual(expected);
 	});
 
 	it('Pomodoro isTimeForPomodoro oldVoiceState channel is not null with no members and newVoiceState channel is not null with enough members', () => {
@@ -198,28 +198,28 @@ describe('Pomodoro', () => {
 			} as VoiceChannel,
 		} as VoiceState;
 		const actual = pomodoro.isTimeForPomodoro(oldVoiceState, newVoiceState);
-		expect(expected).toEqual(actual);
+		expect(actual).toEqual(expected);
 	});
 
 	/* shouldAReminderBeSent */
 	it('Pomodoro shouldAReminderBeSent no reminder message sent', () => {
 		const expected = true;
 		const actual = pomodoro.shouldAReminderBeSent();
-		expect(expected).toEqual(actual);
+		expect(actual).toEqual(expected);
 	});
 
 	it('Pomodoro shouldAReminderBeSent reminder message is too recent', () => {
 		const expected = false;
 		pomodoro.lastMessageSent = new Date(Date.now());
 		const actual = pomodoro.shouldAReminderBeSent();
-		expect(expected).toEqual(actual);
+		expect(actual).toEqual(expected);
 	});
 
 	it('Pomodoro shouldARreminderBeSent reminder message is not too recent', () => {
 		const expected = true;
 		pomodoro.lastMessageSent = new Date(2021, 12, 24);
 		const actual = pomodoro.shouldAReminderBeSent();
-		expect(expected).toEqual(actual);
+		expect(actual).toEqual(expected);
 	});
 
 	/* handlePomodoroInterval */
@@ -234,7 +234,7 @@ describe('Pomodoro', () => {
 		const mockTimer = new PomodoroTimer(1, 1, new Collection());
 		pomodoro.handlePomodoroInterval(mockCommandInteraction, mockTimer);
 		jest.advanceTimersByTime(1000);
-		expect(expected).toEqual(actual);
+		expect(actual).toEqual(expected);
 	});
 
 	it('Pomodoro handlePomodoroInterval work time with a member', () => {
@@ -257,7 +257,7 @@ describe('Pomodoro', () => {
 		pomodoro.handlePomodoroInterval(mockCommandInteraction, mockTimer);
 		jest.advanceTimersByTime(1000);
 	
-		expect(expected).toEqual(actual);
+		expect(actual).toEqual(expected);
 	});
 
 	it('Pomodoro handlePomodoroInterval work time with multiple members', () => {
@@ -285,7 +285,7 @@ describe('Pomodoro', () => {
 		pomodoro.handlePomodoroInterval(mockCommandInteraction, mockTimer);
 		jest.advanceTimersByTime(1000);
 	
-		expect(expected).toEqual(actual);
+		expect(actual).toEqual(expected);
 	});
 
 	it('Pomodoro handlePomodoroInterval break time with no members and first run is true', async () => {
@@ -521,11 +521,11 @@ describe('Pomodoro', () => {
 		await flushPromises();
 		expect(actual).toEqual(expected);
 	});
-/*
+
 	it('Pomodoro handlePomodoroInterval timer is completely done with no members', () => {
 
 	});
-
+/*
 	it('Pomodoro handlePomodoroInterval timer is completely done with a member', () => {
 
 	});
