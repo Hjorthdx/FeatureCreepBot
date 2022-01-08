@@ -879,3 +879,13 @@ describe('Pomodoro onVoiceStateUpdate', () => {
 		expect(sendSpy).toHaveBeenCalledTimes(1);
 	});
 });
+
+describe('Pomodoro start', () => {
+	const pomodoro = new Pomodoro();
+
+
+});
+
+describe('Pomodoro break', () => {
+	const pomodoro = new Pomodoro();
+});
