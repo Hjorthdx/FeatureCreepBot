@@ -78,7 +78,7 @@ export class Pomodoro {
 	) {
 		const connectedUserRoom = this.getRoomUserIsIn(interaction.client, interaction.guildId, interaction.member.user.id);
 		if (!connectedUserRoom) {
-			await interaction.reply('Please connect to a voice channel before starting a pomdooro!');
+			await interaction.reply('Please connect to a voice channel before starting a pomodoro!');
 			return;
 		}
 
@@ -88,7 +88,7 @@ export class Pomodoro {
 			connectedUserRoom.members
 		);
 		if ('error' in newPomodoro) {
-			await interaction.reply(`Error occured! ${newPomodoro.error}`);
+			await interaction.reply(`Error occured!\n${newPomodoro.error}`);
 			return;
 		}
 
@@ -146,19 +146,19 @@ export class Pomodoro {
 		@SlashOption('breaklength', { description: 'Break duration in minutes', required: true }) breakDuration: number,
 		interaction: CommandInteraction
 	) {
+		const connectedUserRoom = this.getRoomUserIsIn(interaction.client, interaction.guildId, interaction.user.id);
+		if (!connectedUserRoom) {
+			await interaction.reply('Please connect to a voice channel before starting a break!');
+			return;
+		}
+
 		const newBreak = this.pomodoroManager.createNewBreak(breakDuration);
 		if ('error' in newBreak) {
 			await interaction.reply(`Error occured!\n${newBreak.error}`);
 			return;
 		}
 
-		const connectedUserRoom = this.getRoomUserIsIn(interaction.client, interaction.guildId, interaction.user.id);
-		if (!connectedUserRoom) {
-			await interaction.reply('Please connect to a voice channel before starting a pomdooro!');
-			return;
-		}
-
-		await interaction.reply('Break started!');
+		await interaction.reply(`Break started with duration ${breakDuration}!`);
 		await newBreak.start();
 		await this.handleBreakInterval(interaction, newBreak, connectedUserRoom);
 	}

@@ -953,7 +953,7 @@ describe('Pomodoro start', () => {
 	});
 
 	it('Replies correct message if user is not connected to a voice channel', () => {
-		const expected = 'Please connect to a voice channel before starting a pomdooro!';
+		const expected = 'Please connect to a voice channel before starting a pomodoro!';
 		let actual = '';
 		const mockCommandInteraction = {
 			client: mockClient,
@@ -989,7 +989,7 @@ describe('Pomodoro start', () => {
 		expect(startNewPomodoroSpy).toHaveBeenCalledTimes(0);
 	});
 
-	it('startNewPomodoro gets called if user is in voice channel', () => {
+	it('createNewPomodoro gets called if user is in voice channel', () => {
 		const mockCommandInteraction = {
 			client: mockClient,
 			guildId: mockGuildID,
@@ -1004,13 +1004,13 @@ describe('Pomodoro start', () => {
 		mockClient.guilds.cache.set('mockGuildKey', mockGuild);
 		mockClient.channels.cache.set('mockChannelKey', mockChannel);
 		pomodoro.start(workDuration, breakDuration, mockCommandInteraction);
-		const startNewPomodoroSpy = jest.spyOn(pomodoro.pomodoroManager, 'createNewPomodoro');
+		const createNewPomodoroSpy = jest.spyOn(pomodoro.pomodoroManager, 'createNewPomodoro');
 
-		expect(startNewPomodoroSpy).toHaveBeenCalledTimes(1);
+		expect(createNewPomodoroSpy).toHaveBeenCalledTimes(1);
 	});
 
 	it('Replies correct message if error starting new pomodoro', () => {
-		const expected = 'Error occured! Duration was 0 or negative';
+		const expected = 'Error occured!\nDuration was 0 or negative';
 		let actual = '';
 		const mockCommandInteraction = {
 			client: mockClient,
@@ -1098,4 +1098,184 @@ describe('Pomodoro start', () => {
 
 describe('Pomodoro break', () => {
 	const pomodoro = new Pomodoro();
+	const breakDuration = 1;
+	const mockGuildID = 'mockGuildID';
+	const mockUserID = 'mockUserID';
+	const mockMember = {
+		id: mockUserID,
+	} as GuildMember;
+	let mockChannelsCache: Collection<string, GuildChannel | ThreadChannel>;
+	let mockGuild: Guild;
+	let mockGuildsCache: Collection<string, Guild>;
+	let mockClient: Client<boolean>;
+	let mockMembers: Collection<string, GuildMember>;
+	let mockChannel: VoiceChannel;
+
+	beforeEach(() => {
+		mockChannelsCache = new Collection<string, GuildChannel | ThreadChannel>();
+		mockGuild = {
+			id: mockGuildID,
+			channels: {
+				cache: mockChannelsCache,
+			} as GuildChannelManager,
+		} as Guild;
+		mockGuildsCache = new Collection<string, Guild>();
+		mockClient = {
+			guilds: {
+				cache: mockGuildsCache,
+			} as GuildManager,
+			channels: {
+				cache: mockChannelsCache,
+			} as GuildChannelManager,
+		} as unknown as Client;
+		mockMembers = new Collection<string, GuildMember>();
+		mockChannel = {
+			type: 'GUILD_VOICE',
+			members: mockMembers,
+		} as VoiceChannel;
+	});
+	
+	it('getRoomUserIsIn gets called', () => {
+		const mockCommandInteraction = {
+			client: mockClient,
+			guildId: mockGuildID,
+			user: {
+				id: 'mockUserID',
+			} as User,
+			reply: jest.fn(() => {}) as unknown,
+		} as CommandInteraction;
+		const getRoomUserIsInSpy = jest.spyOn(pomodoro, 'getRoomUserIsIn');
+		pomodoro.break(breakDuration, mockCommandInteraction);
+
+		expect(getRoomUserIsInSpy).toHaveBeenCalledTimes(1);
+	});
+
+	it('Replies correct message if user is not connected to a voice channel', () => {
+		const expected = 'Please connect to a voice channel before starting a break!';
+		let actual = '';
+		const mockCommandInteraction = {
+			client: mockClient,
+			guildId: mockGuildID,
+			user: {
+				id: 'mockUserID',
+			} as User,
+			reply: jest.fn((message: string) => {
+				actual = message;
+			}) as unknown,
+		} as CommandInteraction;
+		pomodoro.break(breakDuration, mockCommandInteraction);
+
+		expect(actual).toEqual(expected);
+	});
+
+	it('Returns if the user is not connected to a voice channel', () => {
+		const mockCommandInteraction = {
+			client: mockClient,
+			guildId: mockGuildID,
+			user: {
+				id: 'mockUserID',
+			} as User,
+			reply: jest.fn(() => {}) as unknown,
+		} as CommandInteraction;
+		pomodoro.break(breakDuration, mockCommandInteraction);
+		const startNewPomodoroSpy = jest.spyOn(pomodoro.pomodoroManager, 'createNewBreak');
+
+		expect(startNewPomodoroSpy).toHaveBeenCalledTimes(0);
+	});
+
+	it('createNewBreak gets called if user is in voice channel', () => {
+		const mockCommandInteraction = {
+			client: mockClient,
+			guildId: mockGuildID,
+			user: {
+				id: 'mockUserID',
+			} as User,
+			reply: jest.fn(() => {}) as unknown,
+		} as CommandInteraction;
+		mockChannel.members.set('mockUserID', mockMember);
+		mockClient.guilds.cache.set('mockGuildKey', mockGuild);
+		mockClient.channels.cache.set('mockChannelKey', mockChannel);
+		pomodoro.break(breakDuration, mockCommandInteraction);
+		const createNewBreakSpy = jest.spyOn(pomodoro.pomodoroManager, 'createNewBreak');
+
+		expect(createNewBreakSpy).toHaveBeenCalledTimes(1);
+	});
+
+	it('Replies correct message if error starting new break', () => {
+		const expected = 'Error occured!\nDuration was 0 or negative';
+		let actual = '';
+		const mockCommandInteraction = {
+			client: mockClient,
+			guildId: mockGuildID,
+			user: {
+				id: 'mockUserID',
+			} as User,
+			reply: jest.fn((message: string) => {
+				actual = message;
+			}) as unknown,
+		} as CommandInteraction;
+		mockChannel.members.set('mockUserID', mockMember);
+		mockClient.guilds.cache.set('mockGuildKey', mockGuild);
+		mockClient.channels.cache.set('mockChannelKey', mockChannel);
+		pomodoro.break(0, mockCommandInteraction);
+
+		expect(actual).toEqual(expected);
+	});
+
+	it('Returns if there was an error starting new break', () => {
+		const mockCommandInteraction = {
+			client: mockClient,
+			guildId: mockGuildID,
+			user: {
+				id: 'mockUserID',
+			} as User,
+			reply: jest.fn(() => {}) as unknown,
+		} as CommandInteraction;
+		mockChannel.members.set('mockUserID', mockMember);
+		mockClient.guilds.cache.set('mockGuildKey', mockGuild);
+		mockClient.channels.cache.set('mockChannelKey', mockChannel);
+		pomodoro.break(0, mockCommandInteraction);
+		const replySpy = jest.spyOn(mockCommandInteraction, 'reply');
+		expect(replySpy).toBeCalledTimes(1);
+	});
+
+	it('Replies correct message if started new break', () => {
+		const expected = `Break started with duration ${breakDuration}!`;
+		let actual = '';
+		const mockCommandInteraction = {
+			client: mockClient,
+			guildId: mockGuildID,
+			user: {
+				id: 'mockUserID',
+			} as User,
+			reply: jest.fn((message: string) => {
+				actual = message;
+			}) as unknown,
+		} as CommandInteraction;
+		mockChannel.members.set('mockUserID', mockMember);
+		mockClient.guilds.cache.set('mockGuildKey', mockGuild);
+		mockClient.channels.cache.set('mockChannelKey', mockChannel);
+		pomodoro.break(breakDuration, mockCommandInteraction);
+
+		expect(actual).toEqual(expected);
+	});
+
+	it('Calls handleBreakInterval if new break was created', async () => {
+		const mockCommandInteraction = {
+			client: mockClient,
+			guildId: mockGuildID,
+			user: {
+				id: 'mockUserID',
+			} as User,
+			reply: jest.fn(() => {
+			}) as unknown,
+		} as CommandInteraction;
+		mockChannel.members.set('mockUserID', mockMember);
+		mockClient.guilds.cache.set('mockGuildKey', mockGuild);
+		mockClient.channels.cache.set('mockChannelKey', mockChannel);
+		const handleBreakIntervalSpy = jest.spyOn(pomodoro, 'handleBreakInterval');
+		pomodoro.break(breakDuration, mockCommandInteraction);
+		await flushPromises();
+		expect(handleBreakIntervalSpy).toBeCalledTimes(1);
+	});
 });
