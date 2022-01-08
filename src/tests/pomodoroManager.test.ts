@@ -5,7 +5,7 @@ import Timer from '../application/timer';
 
 describe('PomodoroManager', () => {
 	const pomodoroManager = new PomodoroManager();
-    
+
 	// Now all the new Date() that gets created should get the same time and the tests should always behave the same.
 	beforeEach(() => {
 		jest.useFakeTimers('modern');
@@ -117,7 +117,7 @@ describe('PomodoroManager', () => {
 		const actual = pomodoroManager.isListOfPomodoroTimersEmpty();
 		expect(expected).toEqual(actual);
 	});
-	
+
 	it('PomodoroManager isListOfPomodoroTimersEmpty returns correct bool when list is not empty', () => {
 		const expected = false;
 		pomodoroManager.startNewPomodoro(1, 1, new Collection<Snowflake, GuildMember>());

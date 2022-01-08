@@ -1,22 +1,13 @@
-import { Collection, GuildMember, Snowflake, VoiceChannel, VoiceState, CommandInteraction, MemberMention } from 'discord.js';
+import { Collection, GuildMember, Snowflake, VoiceChannel, VoiceState, CommandInteraction, MemberMention, Client, GuildManager, Guild, GuildChannelManager, ThreadChannel, GuildChannel } from 'discord.js';
 import flushPromises from 'flush-promises';
 import PomodoroTimer from '../application/pomodoroTimer';
 import Timer from '../application/timer';
 import { Pomodoro } from '../commands/pomodoro';
 
-describe('Pomodoro', () => {
+describe('Pomodoro isTimeForPomodoro', () => {
 	const pomodoro = new Pomodoro();
 
-	beforeEach(() => {
-		jest.useFakeTimers();
-	});
-
-	afterAll(() => {
-		jest.useRealTimers();
-	});
-
-	/* isTimeForPomodoro */
-	it('Pomodoro isTimeForPomodoro oldVoiceState and newVoiceState is null', () => {
+	it('oldVoiceState and newVoiceState is null', () => {
 		const expected = false;
 		const oldVoiceState = {
 			channel: null,
@@ -28,7 +19,7 @@ describe('Pomodoro', () => {
 		expect(actual).toEqual(expected);
 	});
 
-	it('Pomodoro isTimeForPomodoro oldVoiceState channel is null and newVoiceState channel is not null with no members', () => {
+	it('oldVoiceState channel is null and newVoiceState channel is not null with no members', () => {
 		const expected = false;
 		const oldVoiceState = {
 			channel: null,
@@ -42,7 +33,7 @@ describe('Pomodoro', () => {
 		expect(actual).toEqual(expected);
 	});
 
-	it('Pomodoro isTimeForPomodoro oldVoiceState channel is null and newVoiceState channel is not null with a single member', () => {
+	it('oldVoiceState channel is null and newVoiceState channel is not null with a single member', () => {
 		const mockMembers = new Collection<Snowflake, GuildMember>();
 		mockMembers.set('mockKey', {} as GuildMember);
 		const expected = false;
@@ -58,7 +49,7 @@ describe('Pomodoro', () => {
 		expect(actual).toEqual(expected);
 	});
 
-	it('Pomodoro isTimeForPomodoro oldVoiceState channel is null and newVoiceState channel is not null with enough members', () => {
+	it('oldVoiceState channel is null and newVoiceState channel is not null with enough members', () => {
 		const mockMembers = new Collection<Snowflake, GuildMember>();
 		for (let i = 0; i < pomodoro.groupSize; i++) {
 			mockMembers.set(`${i}`, {} as GuildMember);
@@ -76,7 +67,7 @@ describe('Pomodoro', () => {
 		expect(actual).toEqual(expected);
 	});
 
-	it('Pomodoro isTimeForPomodoro oldVoiceState channel is not null with no members and newVoiceState channel is null', () => {
+	it('oldVoiceState channel is not null with no members and newVoiceState channel is null', () => {
 		const expected = false;
 		const oldVoiceState = {
 			channel: {} as VoiceChannel,
@@ -88,7 +79,7 @@ describe('Pomodoro', () => {
 		expect(actual).toEqual(expected);
 	});
 
-	it('Pomodoro isTimeForPomodoro oldVoiceState channel is not null with a single member and newVoiceState channel is null', () => {
+	it('oldVoiceState channel is not null with a single member and newVoiceState channel is null', () => {
 		const mockMembers = new Collection<Snowflake, GuildMember>();
 		mockMembers.set('mockKey1', {} as GuildMember);
 		const expected = false;
@@ -104,7 +95,7 @@ describe('Pomodoro', () => {
 		expect(actual).toEqual(expected);
 	});
 
-	it('Pomodoro isTimeForPomodoro oldVoiceState channel is not null with enough members and newVoiceState channel is null', () => {
+	it('oldVoiceState channel is not null with enough members and newVoiceState channel is null', () => {
 		const mockMembers = new Collection<Snowflake, GuildMember>();
 		for (let i = 0; i < pomodoro.groupSize; i++) {
 			mockMembers.set(`${i}`, {} as GuildMember);
@@ -122,7 +113,7 @@ describe('Pomodoro', () => {
 		expect(actual).toEqual(expected);
 	});
 
-	it('Pomodoro isTimeForPomodoro oldVoiceState channel is not null with no members and newVoiceState channel is not null with no members', () => {
+	it('oldVoiceState channel is not null with no members and newVoiceState channel is not null with no members', () => {
 		const expected = false;
 		const oldVoiceState = {
 			channel: {} as VoiceChannel,
@@ -134,7 +125,7 @@ describe('Pomodoro', () => {
 		expect(actual).toEqual(expected);
 	});
 
-	it('Pomodoro isTimeForPomodoro oldVoiceState channel is not null with a single member and newVoiceState channel is not null with no members', () => {
+	it('oldVoiceState channel is not null with a single member and newVoiceState channel is not null with no members', () => {
 		const mockMembers = new Collection<Snowflake, GuildMember>();
 		mockMembers.set('mockKey1', {} as GuildMember);
 		const expected = false;
@@ -150,7 +141,7 @@ describe('Pomodoro', () => {
 		expect(actual).toEqual(expected);
 	});
 
-	it('Pomodoro isTimeForPomodoro oldVoiceState channel is not null with enough members and newVoiceState channel is not null with no members', () => {
+	it('oldVoiceState channel is not null with enough members and newVoiceState channel is not null with no members', () => {
 		const mockMembers = new Collection<Snowflake, GuildMember>();
 		for (let i = 0; i < pomodoro.groupSize; i++) {
 			mockMembers.set(`${i}`, {} as GuildMember);
@@ -168,7 +159,7 @@ describe('Pomodoro', () => {
 		expect(actual).toEqual(expected);
 	});
 
-	it('Pomodoro isTimeForPomodoro oldVoiceState channel is not null with no members and newVoiceState channel is not null with a single member', () => {
+	it('oldVoiceState channel is not null with no members and newVoiceState channel is not null with a single member', () => {
 		const mockMembers = new Collection<Snowflake, GuildMember>();
 		mockMembers.set('mockKey1', {} as GuildMember);
 		const expected = false;
@@ -184,7 +175,7 @@ describe('Pomodoro', () => {
 		expect(actual).toEqual(expected);
 	});
 
-	it('Pomodoro isTimeForPomodoro oldVoiceState channel is not null with no members and newVoiceState channel is not null with enough members', () => {
+	it('oldVoiceState channel is not null with no members and newVoiceState channel is not null with enough members', () => {
 		const mockMembers = new Collection<Snowflake, GuildMember>();
 		for (let i = 0; i < pomodoro.groupSize; i++) {
 			mockMembers.set(`${i}`, {} as GuildMember);
@@ -201,29 +192,43 @@ describe('Pomodoro', () => {
 		const actual = pomodoro.isTimeForPomodoro(oldVoiceState, newVoiceState);
 		expect(actual).toEqual(expected);
 	});
+});
 
-	/* shouldAReminderBeSent */
-	it('Pomodoro shouldAReminderBeSent no reminder message sent', () => {
+describe('Pomodoro shouldAReminderBeSent', () => {
+	const pomodoro = new Pomodoro();
+
+	it('No reminder message sent', () => {
 		const expected = true;
 		const actual = pomodoro.shouldAReminderBeSent();
 		expect(actual).toEqual(expected);
 	});
 
-	it('Pomodoro shouldAReminderBeSent reminder message is too recent', () => {
+	it('Reminder message is too recent', () => {
 		const expected = false;
 		pomodoro.lastMessageSent = new Date(Date.now());
 		const actual = pomodoro.shouldAReminderBeSent();
 		expect(actual).toEqual(expected);
 	});
 
-	it('Pomodoro shouldARreminderBeSent reminder message is not too recent', () => {
+	it('Reminder message is not too recent', () => {
 		const expected = true;
 		pomodoro.lastMessageSent = new Date(2021, 12, 24);
 		const actual = pomodoro.shouldAReminderBeSent();
 		expect(actual).toEqual(expected);
 	});
+});
 
-	/* handlePomodoroInterval */
+describe('Pomodoro handlePomodoroInterval', () => {
+	const pomodoro = new Pomodoro();
+
+	beforeEach(() => {
+		jest.useFakeTimers();
+	});
+
+	afterAll(() => {
+		jest.useRealTimers();
+	});
+	
 	it('Pomodoro handlePomodoroInterval work time with no members', () => {
 		const expected = '\nTime left of current work timer: 23:59:59';
 		let actual = '';
@@ -655,6 +660,25 @@ describe('Pomodoro', () => {
 		await flushPromises();
 		expect(actual).toEqual(expected);
 	});
+});
+
+describe('Pomodoro', () => {
+	const pomodoro = new Pomodoro();
+
+	beforeEach(() => {
+		jest.useFakeTimers();
+	});
+
+	afterAll(() => {
+		jest.useRealTimers();
+	});
+
+
+	/* shouldAReminderBeSent */
+	
+
+	/* handlePomodoroInterval */
+	
 
 	/* handleBreakInterval */
 	it('Pomodoro handleBreakInterval break time with no members', () => {
@@ -748,7 +772,7 @@ describe('Pomodoro', () => {
 		jest.advanceTimersByTime(1000);
 		expect(actual).toEqual(expected);
 	});
-	
+
 	it('Pomodoro handleBreakInterval timer is done with one member', () => {
 		const expected = '<@!mockKey1>\nBreak ended!';
 		let actual = '';
@@ -803,6 +827,99 @@ describe('Pomodoro', () => {
 		mockTimer.isOver = true;
 		pomodoro.handleBreakInterval(mockCommandInteraction, mockTimer, mockVoiceChannel);
 		jest.advanceTimersByTime(1000);
+		expect(actual).toEqual(expected);
+	});
+
+	/* getroomUserIsIn */
+	// There sure are a lot of code in each of these tests.
+	// Perhabs I should do something about that?
+	// beforeEach
+	it('Pomodoro getRoomUserIsIn returns undefined when current guild is undefined', () => {
+		const mockUserID = 'mockUserID';
+		const mockGuildID = 'mockGuildID';
+		const mockChannelsCache = new Collection<string, GuildChannel | ThreadChannel>();
+		const mockGuildsCache = new Collection<string, Guild>();
+		const mockClient = {
+			guilds: {
+				cache: mockGuildsCache,
+			} as GuildManager,
+			channels: {
+				cache: mockChannelsCache,
+			} as GuildChannelManager,
+		} as unknown as Client;
+
+		const expected = undefined;
+		const actual = pomodoro.getRoomUserIsIn(mockClient, mockGuildID, mockUserID);
+		expect(actual).toEqual(expected);
+	});
+
+	it('Pomodoro getRoomUserIsIn returns undefined when user is not in a room', () => {
+		const mockUserID = 'mockUserID';
+		const mockGuildID = 'mockGuildID';
+		const mockChannelsCache = new Collection<string, GuildChannel | ThreadChannel>();
+		const mockGuild = {
+			id: mockGuildID,
+			channels: {
+				cache: mockChannelsCache,
+			} as GuildChannelManager
+		} as Guild;
+
+		const mockMembers = new Collection<string, GuildMember>();
+		const mockChannel = {
+			type: 'GUILD_VOICE',
+			members: mockMembers,
+		} as VoiceChannel;
+
+		const mockGuildsCache = new Collection<string, Guild>();
+		const mockClient = {
+			guilds: {
+				cache: mockGuildsCache,
+			} as GuildManager,
+			channels: {
+				cache: mockChannelsCache,
+			} as GuildChannelManager,
+		} as unknown as Client;
+
+		const expected = undefined;
+		mockClient.guilds.cache.set('mockGuildKey', mockGuild);
+		mockClient.channels.cache.set('mockChannelKey', mockChannel);
+		const actual = pomodoro.getRoomUserIsIn(mockClient, mockGuildID, mockUserID);
+		expect(actual).toEqual(expected);
+	});
+
+	it('Pomodoro getRoomUserIsIn returns the room user is in', () => {
+		const mockUserID = 'mockUserID';
+		const mockGuildID = 'mockGuildID';
+		const mockMember = {
+			id: mockUserID,
+		} as GuildMember;
+		const mockChannelsCache = new Collection<string, GuildChannel | ThreadChannel>();
+		const mockGuild = {
+			id: mockGuildID,
+			channels: {
+				cache: mockChannelsCache,
+			} as GuildChannelManager
+		} as Guild;
+		const mockMembers = new Collection<string, GuildMember>();
+		const mockChannel = {
+			type: 'GUILD_VOICE',
+			members: mockMembers,
+		} as VoiceChannel;
+		const mockGuildsCache = new Collection<string, Guild>();
+		const mockClient = {
+			guilds: {
+				cache: mockGuildsCache,
+			} as GuildManager,
+			channels: {
+				cache: mockChannelsCache,
+			} as GuildChannelManager,
+		} as unknown as Client;
+
+		const expected = mockChannel;
+		mockChannel.members.set('mockUserID', mockMember);
+		mockClient.guilds.cache.set('mockGuildKey', mockGuild);
+		mockClient.channels.cache.set('mockChannelKey', mockChannel);
+		const actual = pomodoro.getRoomUserIsIn(mockClient, mockGuildID, mockUserID);
 		expect(actual).toEqual(expected);
 	});
 });
