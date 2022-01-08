@@ -82,7 +82,7 @@ export class Pomodoro {
 			return;
 		}
 
-		const newPomodoro: PomodoroTimer | PomodoroError = this.pomodoroManager.startNewPomodoro(
+		const newPomodoro: PomodoroTimer | PomodoroError = this.pomodoroManager.createNewPomodoro(
 			workDuration,
 			breakDuration,
 			connectedUserRoom.members
@@ -146,7 +146,7 @@ export class Pomodoro {
 		@SlashOption('breaklength', { description: 'Break duration in minutes', required: true }) breakDuration: number,
 		interaction: CommandInteraction
 	) {
-		const newBreak = this.pomodoroManager.startNewBreak(breakDuration);
+		const newBreak = this.pomodoroManager.createNewBreak(breakDuration);
 		if ('error' in newBreak) {
 			await interaction.reply(`Error occured!\n${newBreak.error}`);
 			return;

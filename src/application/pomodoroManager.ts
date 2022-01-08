@@ -14,7 +14,7 @@ export default class PomodoroManager {
         this.listOfPomodoroTimers = [];
     }
 
-    startNewPomodoro = (workDuration: number | undefined, breakDuration: number | undefined, users: Collection<string, GuildMember>) => {
+    createNewPomodoro = (workDuration: number | undefined, breakDuration: number | undefined, users: Collection<string, GuildMember>) => {
         const workResult = this.checkIfValidInput(workDuration);
         const breakResult = this.checkIfValidInput(breakDuration);
         if (workResult.status !== 'OK' && breakResult.status !== 'OK') {
@@ -42,7 +42,7 @@ export default class PomodoroManager {
         return { status: 'OK' } as PomodoroError;
     } 
 
-    startNewBreak = (duration: number | undefined): Timer | PomodoroError => {
+    createNewBreak = (duration: number | undefined): Timer | PomodoroError => {
         const result = this.checkIfValidInput(duration);
         if (result.status !== 'OK') {
             return result;
