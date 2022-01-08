@@ -701,37 +701,24 @@ describe('Pomodoro handleBreakInterval', () => {
 	});
 });
 
-describe('Pomodoro', () => {
+describe('Pomodoro getRoomUserIsIn', () => {
 	const pomodoro = new Pomodoro();
+	const mockUserID = 'mockUserID';
+	const mockGuildID = 'mockGuildID';
+	const mockMember = {
+		id: mockUserID,
+	} as GuildMember;
+	let mockChannelsCache: Collection<string, GuildChannel | ThreadChannel>;
+	let mockGuildsCache: Collection<string, Guild>;
+	let mockClient: Client<boolean>;
+	let mockGuild: Guild;
+	let mockMembers: Collection<string, GuildMember>;
+	let mockChannel: VoiceChannel;
 
 	beforeEach(() => {
-		jest.useFakeTimers();
-	});
-
-	afterAll(() => {
-		jest.useRealTimers();
-	});
-
-
-	/* shouldAReminderBeSent */
-	
-
-	/* handlePomodoroInterval */
-	
-
-	/* handleBreakInterval */
-	
-
-	/* getroomUserIsIn */
-	// There sure are a lot of code in each of these tests.
-	// Perhabs I should do something about that?
-	// beforeEach
-	it('Pomodoro getRoomUserIsIn returns undefined when current guild is undefined', () => {
-		const mockUserID = 'mockUserID';
-		const mockGuildID = 'mockGuildID';
-		const mockChannelsCache = new Collection<string, GuildChannel | ThreadChannel>();
-		const mockGuildsCache = new Collection<string, Guild>();
-		const mockClient = {
+		mockChannelsCache = new Collection<string, GuildChannel | ThreadChannel>();
+		mockGuildsCache = new Collection<string, Guild>();
+		mockClient = {
 			guilds: {
 				cache: mockGuildsCache,
 			} as GuildManager,
@@ -739,39 +726,25 @@ describe('Pomodoro', () => {
 				cache: mockChannelsCache,
 			} as GuildChannelManager,
 		} as unknown as Client;
-
-		const expected = undefined;
-		const actual = pomodoro.getRoomUserIsIn(mockClient, mockGuildID, mockUserID);
-		expect(actual).toEqual(expected);
-	});
-
-	it('Pomodoro getRoomUserIsIn returns undefined when user is not in a room', () => {
-		const mockUserID = 'mockUserID';
-		const mockGuildID = 'mockGuildID';
-		const mockChannelsCache = new Collection<string, GuildChannel | ThreadChannel>();
-		const mockGuild = {
+		mockGuild = {
 			id: mockGuildID,
 			channels: {
 				cache: mockChannelsCache,
 			} as GuildChannelManager
 		} as Guild;
-
-		const mockMembers = new Collection<string, GuildMember>();
-		const mockChannel = {
+		mockMembers = new Collection<string, GuildMember>();
+		mockChannel = {
 			type: 'GUILD_VOICE',
 			members: mockMembers,
 		} as VoiceChannel;
+	})
+	it('Returns undefined when current guild is undefined', () => {
+		const expected = undefined;
+		const actual = pomodoro.getRoomUserIsIn(mockClient, mockGuildID, mockUserID);
+		expect(actual).toEqual(expected);
+	});
 
-		const mockGuildsCache = new Collection<string, Guild>();
-		const mockClient = {
-			guilds: {
-				cache: mockGuildsCache,
-			} as GuildManager,
-			channels: {
-				cache: mockChannelsCache,
-			} as GuildChannelManager,
-		} as unknown as Client;
-
+	it('Returns undefined when user is not in a room', () => {
 		const expected = undefined;
 		mockClient.guilds.cache.set('mockGuildKey', mockGuild);
 		mockClient.channels.cache.set('mockChannelKey', mockChannel);
@@ -779,34 +752,7 @@ describe('Pomodoro', () => {
 		expect(actual).toEqual(expected);
 	});
 
-	it('Pomodoro getRoomUserIsIn returns the room user is in', () => {
-		const mockUserID = 'mockUserID';
-		const mockGuildID = 'mockGuildID';
-		const mockMember = {
-			id: mockUserID,
-		} as GuildMember;
-		const mockChannelsCache = new Collection<string, GuildChannel | ThreadChannel>();
-		const mockGuild = {
-			id: mockGuildID,
-			channels: {
-				cache: mockChannelsCache,
-			} as GuildChannelManager
-		} as Guild;
-		const mockMembers = new Collection<string, GuildMember>();
-		const mockChannel = {
-			type: 'GUILD_VOICE',
-			members: mockMembers,
-		} as VoiceChannel;
-		const mockGuildsCache = new Collection<string, Guild>();
-		const mockClient = {
-			guilds: {
-				cache: mockGuildsCache,
-			} as GuildManager,
-			channels: {
-				cache: mockChannelsCache,
-			} as GuildChannelManager,
-		} as unknown as Client;
-
+	it('Returns the room user is in', () => {
 		const expected = mockChannel;
 		mockChannel.members.set('mockUserID', mockMember);
 		mockClient.guilds.cache.set('mockGuildKey', mockGuild);
