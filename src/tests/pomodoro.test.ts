@@ -1,4 +1,4 @@
-import { Collection, GuildMember, Snowflake, VoiceChannel, VoiceState, CommandInteraction, MemberMention, Client, GuildManager, Guild, GuildChannelManager, ThreadChannel, GuildChannel } from 'discord.js';
+import { Collection, GuildMember, Snowflake, VoiceChannel, VoiceState, CommandInteraction, MemberMention, Client, GuildManager, Guild, GuildChannelManager, ThreadChannel, GuildChannel, TextChannel } from 'discord.js';
 import flushPromises from 'flush-promises';
 import PomodoroTimer from '../application/pomodoroTimer';
 import Timer from '../application/timer';
@@ -196,6 +196,14 @@ describe('Pomodoro isTimeForPomodoro', () => {
 
 describe('Pomodoro shouldAReminderBeSent', () => {
 	const pomodoro = new Pomodoro();
+
+	beforeEach(() => {
+		jest.useFakeTimers();
+	});
+
+	afterAll(() => {
+		jest.useRealTimers();
+	});
 
 	it('No reminder message sent', () => {
 		const expected = true;
@@ -759,5 +767,115 @@ describe('Pomodoro getRoomUserIsIn', () => {
 		mockClient.channels.cache.set('mockChannelKey', mockChannel);
 		const actual = pomodoro.getRoomUserIsIn(mockClient, mockGuildID, mockUserID);
 		expect(actual).toEqual(expected);
+	});
+});
+
+describe('Pomodoro onVoiceStateUpdate', () => {
+	const pomodoro = new Pomodoro();
+	const mockGuildID = 'mockGuildID';
+	let mockChannelsCache: Collection<string, GuildChannel | ThreadChannel>;
+	let mockGuild: Guild;
+	let mockGuildsCache: Collection<string, Guild>;
+	let mockClient: Client<boolean>;
+	let mockChannel: TextChannel;
+
+	beforeEach(() => {
+		mockChannelsCache = new Collection<string, GuildChannel | ThreadChannel>();
+		mockGuild = {
+			id: mockGuildID,
+			channels: {
+				cache: mockChannelsCache,
+			} as GuildChannelManager
+		} as Guild;
+		mockGuildsCache = new Collection<string, Guild>();
+		mockClient = {
+			guilds: {
+				cache: mockGuildsCache,
+			} as GuildManager,
+			channels: {
+				cache: mockChannelsCache,
+			} as GuildChannelManager,
+		} as unknown as Client;
+	});
+
+
+	it('Calls isTimeForPomodoro', () => {
+		const oldVoiceState = {
+			channel: null,
+		} as VoiceState;
+		const newVoiceState = {
+			channel: null,
+		} as VoiceState;
+
+		const isTimeForPomodoroSpy = jest.spyOn(pomodoro, 'isTimeForPomodoro');
+		pomodoro.onVoiceStateUpdate(oldVoiceState, newVoiceState, mockClient);
+
+		expect(isTimeForPomodoroSpy).toHaveBeenCalledTimes(1);
+	});
+
+	it('shouldAReminderBeSent is not called if it is not time for pomodoro', () => {
+		const oldVoiceState = {
+			channel: null,
+		} as VoiceState;
+		const newVoiceState = {
+			channel: null,
+		} as VoiceState;
+
+		const shouldAReminderBeSentSpy = jest.spyOn(pomodoro, 'shouldAReminderBeSent');
+		pomodoro.onVoiceStateUpdate(oldVoiceState, newVoiceState, mockClient);
+
+		expect(shouldAReminderBeSentSpy).toHaveBeenCalledTimes(0);
+	});
+
+	it('shouldAReminderBeSent is called if it is time for pomodoro', () => {
+		const mockMembers = new Collection<Snowflake, GuildMember>();
+		for (let i = 0; i < pomodoro.groupSize; i++) {
+			mockMembers.set(`${i}`, {} as GuildMember);
+		}
+		const oldVoiceState = {
+			channel: null,
+		} as VoiceState;
+		const newVoiceState = {
+			channel: {
+				members: mockMembers,
+			} as VoiceChannel,
+		} as VoiceState;
+
+		const shouldAReminderBeSentSpy = jest.spyOn(pomodoro, 'shouldAReminderBeSent');
+		pomodoro.onVoiceStateUpdate(oldVoiceState, newVoiceState, mockClient);
+
+		expect(shouldAReminderBeSentSpy).toHaveBeenCalledTimes(1);
+	});
+
+	it('Sends a pomodoro opportunity message if a reminder should be sent', () => {
+		let actual = '';
+		const mockMembers = new Collection<Snowflake, GuildMember>();
+		for (let i = 0; i < pomodoro.groupSize; i++) {
+			mockMembers.set(`${i}`, {} as GuildMember);
+		}
+		const oldVoiceState = {
+			channel: null,
+		} as VoiceState;
+		const newVoiceState = {
+			channel: {
+				members: mockMembers,
+			} as VoiceChannel,
+			guild: {
+				id: 'mockGuildID',
+			} as Guild
+		} as VoiceState;
+		mockChannel = {
+			type: 'GUILD_TEXT',
+			send: jest.fn((message: string) => {
+				actual = message;
+			}) as unknown
+		} as TextChannel;
+
+		mockClient.guilds.cache.set('mockGuildKey', mockGuild);
+		mockClient.channels.cache.set('mockChannelKey', mockChannel);
+		pomodoro.lastMessageSent = new Date(2021, 12, 24);
+		const sendSpy = jest.spyOn(mockChannel, 'send');
+		pomodoro.onVoiceStateUpdate(oldVoiceState, newVoiceState, mockClient);
+		expect(sendSpy).toHaveBeenCalledTimes(1);
 	});
 });

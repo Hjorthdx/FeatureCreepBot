@@ -13,9 +13,8 @@ export class Pomodoro {
 	lastMessageSent: Date | undefined;
 
 	@On('voiceStateUpdate')
-	async onVoiceStateUpdate([oldVoiceState, newVoiceState]: ArgsOf<'voiceStateUpdate'>, client: Client) {
+	async onVoiceStateUpdate(oldVoiceState: VoiceState, newVoiceState: VoiceState, client: Client) {
 		if (!this.isTimeForPomodoro(oldVoiceState, newVoiceState)) {
-			console.log('It is not time for a pomodoro');
 			return;
 		}
 
