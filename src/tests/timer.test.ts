@@ -1,7 +1,7 @@
 import Timer from '../application/timer';
 
-describe('Timer', () => {
-	beforeEach(() => {
+describe('Timer start', () => {
+    beforeEach(() => {
 		jest.useFakeTimers('modern');
 		jest.setSystemTime(new Date(2021, 12, 24));
 	});
@@ -10,7 +10,6 @@ describe('Timer', () => {
 		jest.useRealTimers();
 	});
 
-	/* start */
 	it('Timer start calculateTimes gets called once', () => {
 		const mockTimer = new Timer(1);
 		const calculateTimesSpy = jest.spyOn(mockTimer, 'calculateTimes');
@@ -26,8 +25,18 @@ describe('Timer', () => {
 
 		expect(handleTimerIntervalSpy).toHaveBeenCalled();
 	});
+});
 
-	/* calculateTimes */
+describe('Timer calculateTimes', () => {
+    beforeEach(() => {
+		jest.useFakeTimers('modern');
+		jest.setSystemTime(new Date(2021, 12, 24));
+	});
+
+	afterAll(() => {
+		jest.useRealTimers();
+	});
+
 	it('Timer calculateTimes startingTime is current time', () => {
 		const expected = new Date();
 		const mockTimer = new Timer(1);
@@ -56,8 +65,18 @@ describe('Timer', () => {
 
 		expect(actual).toEqual(expected);
 	});
+});
 
-	/* handleTimerInterval */
+describe('Timer handleTimerInterval', () => {
+    beforeEach(() => {
+		jest.useFakeTimers('modern');
+		jest.setSystemTime(new Date(2021, 12, 24));
+	});
+
+	afterAll(() => {
+		jest.useRealTimers();
+	});
+
 	it('Timer handleTimerInterval endTime is in future', () => {
 		const expected = false;
 		const mockTimer = new Timer(1);
@@ -90,8 +109,18 @@ describe('Timer', () => {
 		const actual = mockTimer.isOver;
 		expect(actual).toEqual(expected);
 	});
+});
 
-	/* getRemainingTime */
+describe('Timer getRemainingTime', () => {
+    beforeEach(() => {
+		jest.useFakeTimers('modern');
+		jest.setSystemTime(new Date(2021, 12, 24));
+	});
+
+	afterAll(() => {
+		jest.useRealTimers();
+	});
+
 	it('Timer getRemainingTime endTime is current time', () => {
 		const expected = new Date(new Date().getTime() - new Date().getTime());
 		const mockTimer = new Timer(1);
