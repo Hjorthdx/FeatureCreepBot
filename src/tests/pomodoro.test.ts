@@ -220,9 +220,23 @@ describe('Pomodoro shouldAReminderBeSent', () => {
 
 describe('Pomodoro handlePomodoroInterval', () => {
 	const pomodoro = new Pomodoro();
+	let mockMembers: Collection<string, GuildMember>;
+	let mockMember1: GuildMember;
+	let mockMember2: GuildMember;
 
 	beforeEach(() => {
 		jest.useFakeTimers();
+		mockMembers = new Collection<Snowflake, GuildMember>();
+		mockMember1 = {
+			toString: () => {
+				return `<@!mockKey1>` as MemberMention;
+			},
+		} as GuildMember;
+		mockMember2 = {
+			toString: () => {
+				return `<@!mockKey2>` as MemberMention;
+			},
+		} as GuildMember;
 	});
 
 	afterAll(() => {
@@ -251,14 +265,7 @@ describe('Pomodoro handlePomodoroInterval', () => {
 				actual = options;
 			}) as unknown,
 		} as CommandInteraction;
-		const mockSnowFlake = 'mockKey1';
-		const mockMembers = new Collection<Snowflake, GuildMember>();
-		const mockMember = {
-			toString: () => {
-				return `<@!${mockSnowFlake}>` as MemberMention;
-			},
-		} as GuildMember;
-		mockMembers.set(mockSnowFlake, mockMember);
+		mockMembers.set(mockMember1.toString(), mockMember1);
 		const mockTimer = new PomodoroTimer(1, 1, mockMembers);
 		pomodoro.handlePomodoroInterval(mockCommandInteraction, mockTimer);
 		jest.advanceTimersByTime(1000);
@@ -274,18 +281,7 @@ describe('Pomodoro handlePomodoroInterval', () => {
 				actual = options;
 			}) as unknown,
 		} as CommandInteraction;
-		const mockMembers = new Collection<Snowflake, GuildMember>();
-		const mockMember1 = {
-			toString: () => {
-				return `<@!mockKey1>` as MemberMention;
-			},
-		} as GuildMember;
 		mockMembers.set('mockKey1', mockMember1);
-		const mockMember2 = {
-			toString: () => {
-				return `<@!mockKey2>` as MemberMention;
-			},
-		} as GuildMember;
 		mockMembers.set('mockKey2', mockMember2);
 		const mockTimer = new PomodoroTimer(1, 1, mockMembers);
 		pomodoro.handlePomodoroInterval(mockCommandInteraction, mockTimer);
@@ -357,14 +353,7 @@ describe('Pomodoro handlePomodoroInterval', () => {
 			}) as unknown,
 			followUp: jest.fn((options: string) => {}) as unknown,
 		} as CommandInteraction;
-		const mockSnowFlake = 'mockKey1';
-		const mockMembers = new Collection<Snowflake, GuildMember>();
-		const mockMember = {
-			toString: () => {
-				return `<@!${mockSnowFlake}>` as MemberMention;
-			},
-		} as GuildMember;
-		mockMembers.set(mockSnowFlake, mockMember);
+		mockMembers.set(mockMember1.toString(), mockMember1);
 		const mockTimer = new PomodoroTimer(1, 1, mockMembers);
 		mockTimer.startBreakTimer = jest.fn(async () => {});
 		mockTimer.workTimer.isOver = true;
@@ -383,14 +372,7 @@ describe('Pomodoro handlePomodoroInterval', () => {
 				actual = options;
 			}) as unknown,
 		} as CommandInteraction;
-		const mockSnowFlake = 'mockKey1';
-		const mockMembers = new Collection<Snowflake, GuildMember>();
-		const mockMember = {
-			toString: () => {
-				return `<@!${mockSnowFlake}>` as MemberMention;
-			},
-		} as GuildMember;
-		mockMembers.set(mockSnowFlake, mockMember);
+		mockMembers.set(mockMember1.toString(), mockMember1);
 		const mockTimer = new PomodoroTimer(1, 1, mockMembers);
 		mockTimer.startBreakTimer = jest.fn(async () => {});
 		mockTimer.workTimer.isOver = true;
@@ -409,14 +391,7 @@ describe('Pomodoro handlePomodoroInterval', () => {
 			}) as unknown,
 			followUp: jest.fn((options: string) => {}) as unknown,
 		} as CommandInteraction;
-		const mockSnowFlake = 'mockKey1';
-		const mockMembers = new Collection<Snowflake, GuildMember>();
-		const mockMember = {
-			toString: () => {
-				return `<@!${mockSnowFlake}>` as MemberMention;
-			},
-		} as GuildMember;
-		mockMembers.set(mockSnowFlake, mockMember);
+		mockMembers.set(mockMember1.toString(), mockMember1);
 		const mockTimer = new PomodoroTimer(1, 1, mockMembers);
 		mockTimer.startBreakTimer = jest.fn(async () => {});
 		mockTimer.workTimer.isOver = true;
@@ -435,19 +410,8 @@ describe('Pomodoro handlePomodoroInterval', () => {
 			}) as unknown,
 			followUp: jest.fn((options: string) => {}) as unknown,
 		} as CommandInteraction;
-		const mockMembers = new Collection<Snowflake, GuildMember>();
-		const mockMember1 = {
-			toString: () => {
-				return `<@!mockKey1>` as MemberMention;
-			},
-		} as GuildMember;
-		mockMembers.set('mockKey1', mockMember1);
-		const mockMember2 = {
-			toString: () => {
-				return `<@!mockKey2>` as MemberMention;
-			},
-		} as GuildMember;
-		mockMembers.set('mockKey2', mockMember2);
+		mockMembers.set(mockMember1.toString(), mockMember1);
+		mockMembers.set(mockMember2.toString(), mockMember2);
 		const mockTimer = new PomodoroTimer(1, 1, mockMembers);
 		mockTimer.startBreakTimer = jest.fn(async () => {});
 		mockTimer.workTimer.isOver = true;
@@ -466,19 +430,8 @@ describe('Pomodoro handlePomodoroInterval', () => {
 				actual = options;
 			}) as unknown,
 		} as CommandInteraction;
-		const mockMembers = new Collection<Snowflake, GuildMember>();
-		const mockMember1 = {
-			toString: () => {
-				return `<@!mockKey1>` as MemberMention;
-			},
-		} as GuildMember;
-		mockMembers.set('mockKey1', mockMember1);
-		const mockMember2 = {
-			toString: () => {
-				return `<@!mockKey2>` as MemberMention;
-			},
-		} as GuildMember;
-		mockMembers.set('mockKey2', mockMember2);
+		mockMembers.set(mockMember1.toString(), mockMember1);
+		mockMembers.set(mockMember2.toString(), mockMember2);
 		const mockTimer = new PomodoroTimer(1, 1, mockMembers);
 		mockTimer.startBreakTimer = jest.fn(async () => {});
 		mockTimer.workTimer.isOver = true;
@@ -497,19 +450,8 @@ describe('Pomodoro handlePomodoroInterval', () => {
 			}) as unknown,
 			followUp: jest.fn((options: string) => {}) as unknown,
 		} as CommandInteraction;
-		const mockMembers = new Collection<Snowflake, GuildMember>();
-		const mockMember1 = {
-			toString: () => {
-				return `<@!mockKey1>` as MemberMention;
-			},
-		} as GuildMember;
-		mockMembers.set('mockKey1', mockMember1);
-		const mockMember2 = {
-			toString: () => {
-				return `<@!mockKey2>` as MemberMention;
-			},
-		} as GuildMember;
-		mockMembers.set('mockKey2', mockMember2);
+		mockMembers.set(mockMember1.toString(), mockMember1);
+		mockMembers.set(mockMember2.toString(), mockMember2);
 		const mockTimer = new PomodoroTimer(1, 1, mockMembers);
 		mockTimer.startBreakTimer = jest.fn(async () => {});
 		mockTimer.workTimer.isOver = true;
@@ -544,14 +486,7 @@ describe('Pomodoro handlePomodoroInterval', () => {
 			}) as unknown,
 			followUp: jest.fn((options: string) => {}) as unknown,
 		} as CommandInteraction;
-		const mockSnowFlake = 'mockKey1';
-		const mockMembers = new Collection<Snowflake, GuildMember>();
-		const mockMember = {
-			toString: () => {
-				return `<@!${mockSnowFlake}>` as MemberMention;
-			},
-		} as GuildMember;
-		mockMembers.set(mockSnowFlake, mockMember);
+		mockMembers.set(mockMember1.toString(), mockMember1);
 		const mockTimer = new PomodoroTimer(1, 1, mockMembers);
 		mockTimer.breakTimer.isOver = true;
 		pomodoro.handlePomodoroInterval(mockCommandInteraction, mockTimer);
@@ -569,19 +504,8 @@ describe('Pomodoro handlePomodoroInterval', () => {
 			}) as unknown,
 			followUp: jest.fn((options: string) => {}) as unknown,
 		} as CommandInteraction;
-		const mockMembers = new Collection<Snowflake, GuildMember>();
-		const mockMember1 = {
-			toString: () => {
-				return `<@!mockKey1>` as MemberMention;
-			},
-		} as GuildMember;
-		mockMembers.set('mockKey1', mockMember1);
-		const mockMember2 = {
-			toString: () => {
-				return `<@!mockKey2>` as MemberMention;
-			},
-		} as GuildMember;
-		mockMembers.set('mockKey2', mockMember2);
+		mockMembers.set(mockMember1.toString(), mockMember1);
+		mockMembers.set(mockMember2.toString(), mockMember2);
 		const mockTimer = new PomodoroTimer(1, 1, mockMembers);
 		mockTimer.breakTimer.isOver = true;
 		pomodoro.handlePomodoroInterval(mockCommandInteraction, mockTimer);
@@ -615,14 +539,7 @@ describe('Pomodoro handlePomodoroInterval', () => {
 				actual = options;
 			}) as unknown,
 		} as CommandInteraction;
-		const mockSnowFlake = 'mockKey1';
-		const mockMembers = new Collection<Snowflake, GuildMember>();
-		const mockMember = {
-			toString: () => {
-				return `<@!${mockSnowFlake}>` as MemberMention;
-			},
-		} as GuildMember;
-		mockMembers.set(mockSnowFlake, mockMember);
+		mockMembers.set(mockMember1.toString(), mockMember1);
 		const mockTimer = new PomodoroTimer(1, 1, mockMembers);
 		mockTimer.breakTimer.isOver = true;
 		pomodoro.handlePomodoroInterval(mockCommandInteraction, mockTimer);
@@ -640,19 +557,8 @@ describe('Pomodoro handlePomodoroInterval', () => {
 				actual = options;
 			}) as unknown,
 		} as CommandInteraction;
-		const mockMembers = new Collection<Snowflake, GuildMember>();
-		const mockMember1 = {
-			toString: () => {
-				return `<@!mockKey1>` as MemberMention;
-			},
-		} as GuildMember;
-		mockMembers.set('mockKey1', mockMember1);
-		const mockMember2 = {
-			toString: () => {
-				return `<@!mockKey2>` as MemberMention;
-			},
-		} as GuildMember;
-		mockMembers.set('mockKey2', mockMember2);
+		mockMembers.set(mockMember1.toString(), mockMember1);
+		mockMembers.set(mockMember2.toString(), mockMember2);
 		const mockTimer = new PomodoroTimer(1, 1, mockMembers);
 		mockTimer.breakTimer.isOver = true;
 		pomodoro.handlePomodoroInterval(mockCommandInteraction, mockTimer);
