@@ -25,9 +25,11 @@ client.once('ready', async () => {
 });
 
 client.on('interactionCreate', (interaction: Interaction) => {
-  console.log('I was called');
   client.executeInteraction(interaction);
 });
+
+// Doesn't work I think
+client.on('unhandledRejection', error => console.error('Promise rejection:', error));
 
 importx(path.join(__dirname, 'commands', '**/*.{ts,js}')).then(() => {
   client.login(''); // Remember to reinsert it here when this doesn't work =)

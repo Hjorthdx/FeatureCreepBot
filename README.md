@@ -12,3 +12,4 @@ How to run?
 
 To do (The never ending list =)):
 - env file so it isn't just in plain text as right now =)
+- Add code coverage badges.
