@@ -26,9 +26,9 @@ export default class PomodoroTimer {
 	isWorkTimerOver = () => this._workTimer.isOver;
 
 	isBreakTimerOver = () => this._breakTimer.isOver;
-    
-    // start methods ? Necessary?
-    startWorkTimer = () => this._workTimer.start();
 
-    startBreakTimer = () => this._breakTimer.start();
+	// start methods ? Necessary?
+	startWorkTimer = () => this._workTimer.start();
+
+	startBreakTimer = () => this._breakTimer.start();
 }

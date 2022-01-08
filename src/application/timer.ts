@@ -12,13 +12,21 @@ export default class Timer {
 	}
 
 	start = async () => {
+		this.calculateTimes();
+		this.handleTimerInterval();
+	};
+
+	calculateTimes = () => {
 		this.startingTime = new Date();
 		this.endTime = new Date();
 		this.endTime.setMinutes(this.startingTime.getMinutes() + this.durationInMinutes);
-		const x = setInterval(() => {
+	};
+
+	handleTimerInterval = () => {
+		const timerInterval = setInterval(() => {
 			if (new Date(Date.now()) >= this.endTime) {
 				this.isOver = true;
-				clearInterval(x);
+				clearInterval(timerInterval);
 			}
 		}, 1000);
 	};
