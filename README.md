@@ -15,5 +15,5 @@ In addition I've set up the goal for myself that I really want to learn testing.
 
 `npm run start`
 
-## To do's:
-- Add code coverage badges.
+# Currently implemented features:
+## Pomodoro
