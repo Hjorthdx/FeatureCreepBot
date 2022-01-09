@@ -1,7 +1,10 @@
 # FeatureCreepBot
 A rewrite of the python DiscordFeatureCreepBot.
 
-How to run?
+The main objective of this bot is for me to learn TypeScript. <br/>
+In addition I've set up the goal for myself that I really want to learn testing. Therefore all features that's being made on FeatureCreepBot should be fully tested before moving on to a new feature. This is what happend with the Python version, where a lot of bugs were constantly discovered that I had to go back and fix. I hope to solve issues like these by having every feature tested before release.
+
+## How to run? <br/>
 `git clone https://github.com/Hjorthdx/FeatureCreepBot`
 
 `cd FeatureCreepBot`
@@ -10,6 +13,7 @@ How to run?
 
 `npm run build`
 
-To do (The never ending list =)):
-- env file so it isn't just in plain text as right now =)
+`npm run start`
+
+## To do's:
 - Add code coverage badges.
